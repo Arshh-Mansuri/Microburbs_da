@@ -266,6 +266,8 @@ const STEPS = 4;
 const BED_LABEL = ["Studio", "1 bedroom", "2 bedrooms", "3 bedrooms", "4 bedrooms", "5 or more bedrooms"];
 const BED_SHORT = ["Studio", "1", "2", "3", "4", "5+"];
 const UNIT_WORDS = new Set(["UNIT", "U", "APT", "APARTMENT", "FLAT", "SUITE", "LEVEL", "LVL", "NO"]);
+// Stored addresses end at the postcode, so a typed state or country would match nothing.
+const PLACE_WORDS = new Set(["NSW", "AUSTRALIA", "AUS", "AU"]);
 const ABBREVIATIONS = {
   ST: "STREET", RD: "ROAD", AVE: "AVENUE", AV: "AVENUE", PL: "PLACE", PDE: "PARADE", HWY: "HIGHWAY",
   CRES: "CRESCENT", CR: "CRESCENT", LN: "LANE", DR: "DRIVE", TCE: "TERRACE", SQ: "SQUARE", CCT: "CIRCUIT",
@@ -287,7 +289,7 @@ const numbersOf = D.flats.map(f => {
 function findFlats(text, limit) {
   const raw = text.toUpperCase().replace(/\b(UNIT|APT|U)(\d)/g, "$1 $2");
   const finished = /\s$/.test(text);
-  const tokens = words(raw.replace(/\//g, " ")).filter(w => !UNIT_WORDS.has(w));
+  const tokens = words(raw.replace(/\//g, " ")).filter(w => !UNIT_WORDS.has(w) && !PLACE_WORDS.has(w));
   if (!tokens.length || (tokens.length === 1 && tokens[0].length < 2)) return [];
   const numbers = tokens.filter(w => /^\d/.test(w));
   // "31/29 X St" and "Unit 31, 29 X St" both mean unit 31 at number 29.
