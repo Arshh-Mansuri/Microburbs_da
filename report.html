@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which building a flat is in sets its rent</title>
+<style>
+  :root { color-scheme: light dark; --ink: #1b1b1b; --dim: #666; --line: #d9d9d9; --accent: #3d63d6; --muted: #c4c9d4; --bg: #fff; }
+  @media (prefers-color-scheme: dark) { :root { --ink: #ececec; --dim: #a0a0a0; --line: #383838; --accent: #8aa4f2; --muted: #4a4f5a; --bg: #161616; } }
+  * { box-sizing: border-box; }
+  body { margin: 0 auto; max-width: 780px; padding: 36px 20px 80px; background: var(--bg); color: var(--ink);
+         font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  h1 { font-size: 28px; line-height: 1.25; font-weight: 500; margin: 0 0 14px; }
+  h2 { font-size: 20px; font-weight: 500; margin: 44px 0 10px; }
+  p { margin: 10px 0; }
+  .lead { font-size: 17px; }
+  .finding { border-top: 1px solid var(--line); padding: 16px 0 6px; }
+  .finding .figure { font-size: 24px; font-weight: 500; }
+  .stats { display: flex; flex-wrap: wrap; gap: 12px; margin: 16px 0; }
+  .stat { flex: 1 1 160px; border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; }
+  .stat b { display: block; font-size: 24px; font-weight: 500; }
+  .stat span { color: var(--dim); font-size: 14px; }
+  table { width: 100%; border-collapse: collapse; margin: 14px 0; font-size: 15px; }
+  th, td { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); }
+  th { font-weight: 500; color: var(--dim); font-size: 13px; }
+  td + td, th + th { text-align: right; }
+  svg { width: 100%; height: auto; display: block; margin: 14px 0 4px; }
+  .caption, .legend { color: var(--dim); font-size: 14px; }
+  .key { display: inline-block; width: 12px; height: 12px; margin: 0 6px 0 14px; vertical-align: -1px; }
+  .key:first-child { margin-left: 0; }
+  .key.muted { background: var(--muted); }
+  .key.accent { background: var(--accent); }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0; font-size: 15px; }
+  .flow span { border: 1px solid var(--line); border-radius: 6px; padding: 6px 10px; }
+  .flow i { color: var(--dim); font-style: normal; }
+  .back { color: var(--dim); font-size: 14px; }
+</style>
+
+<p class="back">Report for the Microburbs Hackathon Rents task, 7 November 2026</p>
+<h1>Which building a flat is in sets its rent. Its floor barely does.</h1>
+
+<p class="lead">2-bedroom flats with parking in Zetland ask anywhere from
+$978 to $1,500 a week, depending on the building. That $522
+spread sits inside one suburb, one bedroom count and one parking answer. Moving up one floor in the same building adds
+about $1.46 a week. Comparing a flat with its own building instead of its suburb cut the typical miss
+from $100 to $52.29 on 3,954 later adverts.</p>
+
+<p>Tenants can check an ask against the same building before signing. Landlords can price against their own building
+before advertising. Buyers can see that two flats in one suburb are not one rent.</p>
+
+<svg viewBox="0 0 620 140" role="img" aria-label="Typical weekly asking rent for each of 96 buildings with 2-bedroom flats with parking in Zetland, from $978 to $1,500. The suburb's typical rent is $1,165.">
+  <line x1="30" y1="90" x2="590" y2="90" stroke="var(--line)"/>
+  <line x1="55.5" y1="40" x2="55.5" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="79.8" y1="40" x2="79.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="82.7" y1="40" x2="82.7" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="82.7" y1="40" x2="82.7" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="93.0" y1="40" x2="93.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="95.8" y1="40" x2="95.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="98.0" y1="40" x2="98.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="98.6" y1="40" x2="98.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="106.1" y1="40" x2="106.1" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="106.3" y1="40" x2="106.3" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="106.3" y1="40" x2="106.3" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="113.7" y1="40" x2="113.7" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="119.1" y1="40" x2="119.1" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="124.0" y1="40" x2="124.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="130.0" y1="40" x2="130.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="130.0" y1="40" x2="130.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="134.3" y1="40" x2="134.3" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="134.3" y1="40" x2="134.3" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="134.3" y1="40" x2="134.3" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="134.3" y1="40" x2="134.3" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="139.0" y1="40" x2="139.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="139.0" y1="40" x2="139.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="142.1" y1="40" x2="142.1" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="150.0" y1="40" x2="150.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="155.0" y1="40" x2="155.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="158.9" y1="40" x2="158.9" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="159.2" y1="40" x2="159.2" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="159.4" y1="40" x2="159.4" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="163.3" y1="40" x2="163.3" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="164.7" y1="40" x2="164.7" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="165.6" y1="40" x2="165.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="165.6" y1="40" x2="165.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="174.5" y1="40" x2="174.5" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="174.5" y1="40" x2="174.5" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="174.5" y1="40" x2="174.5" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="177.3" y1="40" x2="177.3" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="184.7" y1="40" x2="184.7" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="185.9" y1="40" x2="185.9" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="185.9" y1="40" x2="185.9" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="195.7" y1="40" x2="195.7" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="199.0" y1="40" x2="199.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="202.4" y1="40" x2="202.4" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="205.1" y1="40" x2="205.1" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="214.2" y1="40" x2="214.2" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="217.9" y1="40" x2="217.9" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="218.8" y1="40" x2="218.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="218.8" y1="40" x2="218.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="218.8" y1="40" x2="218.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="218.8" y1="40" x2="218.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="218.8" y1="40" x2="218.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="223.2" y1="40" x2="223.2" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="231.8" y1="40" x2="231.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="237.6" y1="40" x2="237.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="237.6" y1="40" x2="237.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="237.6" y1="40" x2="237.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="237.6" y1="40" x2="237.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="258.2" y1="40" x2="258.2" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="261.4" y1="40" x2="261.4" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="262.2" y1="40" x2="262.2" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="270.8" y1="40" x2="270.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="272.0" y1="40" x2="272.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="272.0" y1="40" x2="272.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="272.0" y1="40" x2="272.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="272.0" y1="40" x2="272.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="272.0" y1="40" x2="272.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="272.0" y1="40" x2="272.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="272.0" y1="40" x2="272.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="272.0" y1="40" x2="272.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="280.6" y1="40" x2="280.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="280.6" y1="40" x2="280.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="287.3" y1="40" x2="287.3" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="289.2" y1="40" x2="289.2" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="305.4" y1="40" x2="305.4" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="306.4" y1="40" x2="306.4" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="320.8" y1="40" x2="320.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="320.8" y1="40" x2="320.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="320.8" y1="40" x2="320.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="323.0" y1="40" x2="323.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="325.2" y1="40" x2="325.2" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="330.5" y1="40" x2="330.5" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="333.0" y1="40" x2="333.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="337.6" y1="40" x2="337.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="339.0" y1="40" x2="339.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="348.2" y1="40" x2="348.2" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="369.5" y1="40" x2="369.5" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="369.5" y1="40" x2="369.5" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="378.4" y1="40" x2="378.4" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="378.4" y1="40" x2="378.4" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="379.8" y1="40" x2="379.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="405.7" y1="40" x2="405.7" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="423.4" y1="40" x2="423.4" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="431.6" y1="40" x2="431.6" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="467.0" y1="40" x2="467.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="484.8" y1="40" x2="484.8" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="506.0" y1="40" x2="506.0" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+<line x1="564.5" y1="40" x2="564.5" y2="90" stroke="var(--accent)" stroke-width="2" opacity="0.55"/>
+  <line x1="237.6" y1="28" x2="237.6" y2="100" stroke="var(--ink)" stroke-dasharray="3 3"/>
+  <text x="237.6" y="20" font-size="12" fill="var(--ink)" text-anchor="middle">Suburb typical $1,165</text>
+  <text x="55.5" y="116" font-size="12" fill="var(--dim)" text-anchor="start">$978</text>
+  <text x="564.5" y="116" font-size="12" fill="var(--dim)" text-anchor="end">$1,500</text>
+  <text x="310" y="134" font-size="11" fill="var(--dim)" text-anchor="middle">Each line is one building's typical weekly asking rent</text>
+</svg>
+<p class="caption">96 Zetland buildings with at least five adverts for
+2-bedroom flats with parking, dated by 30 April 2026 and brought forward to that date.</p>
+
+<h2>What we found along the way</h2>
+
+<div class="finding">
+  <div class="figure">$522 a week</div>
+  <p>The gap between the cheapest and dearest building for one flat type in one suburb. The three groups with the most
+  buildings were
+  2-bedroom flats with parking in Zetland, $978 to $1,500; 2-bedroom flats with parking in Waterloo, $905 to $1,376; 1-bedroom flats without parking in Potts Point, $487 to $926.
+  A suburb median hides most of what sets a flat's rent. This is the rent side of the
+  <a href="https://www.microburbs.com.au/research/median-mirage">Median Mirage</a>.</p>
+</div>
+
+<div class="finding">
+  <div class="figure">$1.46 a week per floor</div>
+  <p>Measured across 18,153 adverts in 1,709 groups that share a building, bedroom
+  count and parking answer and span at least two floors. Against their own group's typical rent:</p>
+  <table><thead><tr><th>Floor</th><th>Adverts</th><th>Against the building's typical rent</th></tr></thead><tbody><tr><td>Floors 1 to 4</td><td>7,624</td><td>+0.00</td></tr><tr><td>Floors 5 to 9</td><td>4,995</td><td>+0.00</td></tr><tr><td>Floors 10 to 19</td><td>2,912</td><td>+0.00</td></tr><tr><td>Floor 20 and up</td><td>2,604</td><td>+2.23</td></tr></tbody></table>
+  <p>Once the building is known, height adds little. Floor level comes from the unit number, so it is known for only
+  34,396 of the 65,777 flats.</p>
+</div>
+
+<div class="finding">
+  <div class="figure">$0.00 typical bias</div>
+  <p>Half of the later adverts asked more than our estimate and half asked less. The task page reports that the
+  Microburbs rental valuation runs about $61 a week low. That figure is measured on August and September 2026 adverts,
+  ours on May to July, so the two are not the same test.</p>
+</div>
+
+<div class="finding">
+  <div class="figure">15.0% of asks</div>
+  <p>595 of the 3,954 later adverts asked more than $100 a week above their building's going
+  rate. In Surry Hills and Pyrmont it was about 22%. That is the tenant check this estimate makes possible.</p>
+</div>
+
+<div class="finding">
+  <div class="figure">$76 a week for a car space</div>
+  <p>The typical gap across 79 suburb and bedroom groups with at least ten adverts for each
+  parking answer, about $3,971 a year. It grows with the flat:</p>
+  <table><thead><tr><th>Flat</th><th>Car space adds</th></tr></thead><tbody><tr><td>Studio</td><td>$31.76</td></tr><tr><td>1 bedroom</td><td>$48.40</td></tr><tr><td>2 bedrooms</td><td>$61.76</td></tr><tr><td>3 bedrooms</td><td>$104.76</td></tr></tbody></table>
+  <p>The example report found $90 using one year of adverts. Ours uses three years brought forward to April 2026,
+  which reaches more groups.</p>
+</div>
+
+<div class="finding">
+  <div class="figure">+2.5% against -2.6%</div>
+  <p>Flats in blocks where homes grew by more than 30% from 2021 to 2026 asked 2.5% above
+  their suburb's typical rent for the same flat type. Flats in blocks with no new homes asked
+  2.6% below. New buildings may simply be newer, so this is a pattern, not a cause.</p>
+</div>
+
+<div class="finding">
+  <div class="figure">-0.6% after the market move</div>
+  <p>2,074 flats came back on the market in the later period. They asked 3.8% above their own
+  previous advert, but 0.6% below it once that earlier ask is brought forward by the city-wide move.
+  Relisted flats mostly follow the market rather than jump ahead of it.</p>
+</div>
+
+<h2>What our separate check showed</h2>
+
+<div class="stats">
+  <div class="stat"><b>$52.29</b><span>typical miss a week</span></div>
+  <div class="stat"><b>72.2%</b><span>2,855 of 3,954 within $100</span></div>
+  <div class="stat"><b>0.834</b><span>R squared</span></div>
+</div>
+
+<p>R squared was 0.834 on 3,954 later adverts. R squared is the share of variation in weekly rent
+the estimate explains. The same adverts under the example report's method gave a $100 typical miss,
+56.8% within $100 and R squared 0.645.</p>
+
+<svg viewBox="0 0 600 236" role="img" aria-label="How far off each of 3,954 later adverts was, for the example method and for ours">
+  <text x="0" y="30" font-size="12" fill="var(--ink)">Within $50</text>
+  <rect x="170" y="18" width="229.1" height="16" fill="var(--muted)"/>
+  <text x="405.1" y="30" font-size="12" fill="var(--dim)">1,358</text>
+  <rect x="170" y="38" width="330.0" height="16" fill="var(--accent)"/>
+  <text x="506.0" y="50" font-size="12" fill="var(--ink)">1,956</text><text x="0" y="84" font-size="12" fill="var(--ink)">Over $50 up to $100</text>
+  <rect x="170" y="72" width="149.8" height="16" fill="var(--muted)"/>
+  <text x="325.8" y="84" font-size="12" fill="var(--dim)">888</text>
+  <rect x="170" y="92" width="151.7" height="16" fill="var(--accent)"/>
+  <text x="327.7" y="104" font-size="12" fill="var(--ink)">899</text><text x="0" y="138" font-size="12" fill="var(--ink)">Over $100 up to $200</text>
+  <rect x="170" y="126" width="165.3" height="16" fill="var(--muted)"/>
+  <text x="341.3" y="138" font-size="12" fill="var(--dim)">980</text>
+  <rect x="170" y="146" width="122.5" height="16" fill="var(--accent)"/>
+  <text x="298.5" y="158" font-size="12" fill="var(--ink)">726</text><text x="0" y="192" font-size="12" fill="var(--ink)">More than $200</text>
+  <rect x="170" y="180" width="122.8" height="16" fill="var(--muted)"/>
+  <text x="298.8" y="192" font-size="12" fill="var(--dim)">728</text>
+  <rect x="170" y="200" width="62.9" height="16" fill="var(--accent)"/>
+  <text x="238.9" y="212" font-size="12" fill="var(--ink)">373</text>
+</svg>
+<p class="legend"><span class="key muted"></span>Suburb, bedrooms and parking <span class="key accent"></span>Same building, older asks brought forward</p>
+
+<table><thead><tr><th>Estimate</th><th>Typical miss</th><th>Within $100</th><th>R squared</th></tr></thead><tbody><tr><td>Suburb, bedrooms and parking (the example report)</td><td>$100.00</td><td>56.8%</td><td>0.645</td></tr><tr><td>Same building, last year of adverts only</td><td>$59.41</td><td>69.4%</td><td>0.781</td></tr><tr><td>Same building, older asks brought forward</td><td>$53.48</td><td>72.0%</td><td>0.820</td></tr><tr><td>Plus nearest buildings where a building never advertised</td><td>$52.29</td><td>72.2%</td><td>0.834</td></tr></tbody></table>
+
+<p>We built the estimate using adverts dated by 30 April 2026. We kept the 1 May to 31 July 2026 adverts aside until
+the estimate was fixed. The Microburbs Hackathon scores hidden August to September 2026 adverts separately.</p>
+
+<h2>What data supported the result?</h2>
+
+<p>41,518 adverts in the supplied lease file are dated 1 May 2023 to 30 April 2026.
+39,683 of them carry a bedroom count and a parking answer and built the estimate.
+Another 1,835 lacked one or the other and were left out.
+3,954 later adverts tested it, and 129 more lacked bedrooms or parking.</p>
+
+<p>Floor level and block growth come from the supplied flat file and block file. We did not call the Microburbs API
+and read nothing dated after 31 July 2026.</p>
+
+<h2>How did we estimate rent?</h2>
+
+<div class="flow"><span>Earlier adverts</span><i>→</i><span>Brought forward to April 2026</span><i>→</i><span>Same building, bedrooms and parking</span><i>→</i><span>Median weekly rent</span></div>
+
+<p>Each older ask is scaled by how the city-wide median ask moved between its quarter and the quarter ending April 2026,
+then weighted down as it ages, halving every three years. Adverts older than three years are left out.</p>
+
+<p>A building group needs one earlier advert. Where a building has only advertised one parking answer, the other rent
+is that one plus the parking gap for its suburb and bedroom count, kept between $0 and a quarter of the rent.</p>
+
+<p>A building that never advertised this flat type borrows the median of the 10 nearest buildings
+within 1,000 metres that did, by straight-line distance from the supplied coordinates. Only where
+none is in reach does it fall back to the suburb, bedrooms and parking median, which needs ten earlier adverts, then
+to bedrooms.</p>
+
+<table><thead><tr><th>Comparison used</th><th>Later adverts</th><th>Typical miss</th><th>Within $100</th></tr></thead><tbody><tr><td>building advertised both</td><td>1,855.0</td><td>$50.00</td><td>76.3%</td></tr><tr><td>building, parking gap</td><td>1,766.0</td><td>$50.00</td><td>73.0%</td></tr><tr><td>nearby buildings</td><td>327.0</td><td>$115.13</td><td>45.0%</td></tr><tr><td>nearby buildings, parking gap</td><td>6.0</td><td>$248.68</td><td>33.3%</td></tr></tbody></table>
+
+<h2>How did we check it?</h2>
+
+<p>The three year reach, the three year half life, the one advert minimum and the 10 nearest buildings
+within 1,000 metres were chosen on three earlier checks,
+scored on February to April 2026, November 2025 to January 2026, and August to October 2025. The May to July 2026
+adverts played no part in choosing them. Floor level was tested the same way and left out, because it raised the
+typical miss on two of the three.</p>
+
+<p>The miss held steady across the test window, which matters because the hidden adverts run up to two months past
+the as-at date:</p>
+<table><thead><tr><th>Month</th><th>Later adverts</th><th>Typical miss</th></tr></thead><tbody><tr><td>2026-05</td><td>1,229.0</td><td>$52.35</td></tr><tr><td>2026-06</td><td>1,437.0</td><td>$50.00</td></tr><tr><td>2026-07</td><td>1,288.0</td><td>$55.00</td></tr></tbody></table>
+
+<p>Rebuilding the estimate before each of seven earlier quarters and scoring that quarter gave:</p>
+<table><thead><tr><th>Quarter</th><th>Adverts</th><th>Typical miss</th><th>Within $100</th></tr></thead><tbody><tr><td>2024Q3</td><td>3,805</td><td>$60.00</td><td>68.4%</td></tr><tr><td>2024Q4</td><td>3,659</td><td>$60.00</td><td>68.5%</td></tr><tr><td>2025Q1</td><td>3,352</td><td>$60.00</td><td>69.1%</td></tr><tr><td>2025Q2</td><td>3,467</td><td>$53.24</td><td>74.2%</td></tr><tr><td>2025Q3</td><td>3,502</td><td>$55.00</td><td>71.9%</td></tr><tr><td>2025Q4</td><td>3,461</td><td>$50.22</td><td>72.7%</td></tr><tr><td>2026Q1</td><td>3,203</td><td>$55.06</td><td>71.3%</td></tr></tbody></table>
+
+<p>Drawing 1,699 adverts at random, the size of the hidden set, 2,000 times put the typical miss between
+$50.00 and $55.88 nine times in ten.</p>
+
+<h2>What remains uncertain?</h2>
+
+<p>333 later adverts sat in buildings with no earlier advert for their flat type. Borrowing from
+nearby buildings, they missed by a typical $116.91, down from
+$129.41 with the suburb alone,
+but still well above $50.00 for flats with their own building's
+adverts.</p>
+
+<p>2,729 later flats had advertised before. Deleting every later flat's own past adverts, so each
+estimate came only from other flats, raised the typical miss to $60.00 with
+68.9% within $100. That is closer to what the 16,094 never-advertised flats
+can expect.</p>
+
+<p>In the hand-in file, 6,323 flats price a car space below no car space, because their own building's
+adverts did. We kept those rather than override the evidence.</p>
+
+<p>We did not test which way a flat faces or whether nearby buildings block light. The supplied files hold no
+orientation or building height, and condition is not recorded anywhere.</p>
+
+<p>The separate May to July 2026 check had a $52.29 typical weekly miss.</p>
+</html>

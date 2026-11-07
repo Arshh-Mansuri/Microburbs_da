@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>What will this flat rent for?</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  :root { color-scheme: light dark; --line: #d6d6d6; --dim: #6a6a6a; --bar: #4b6bd6; --ink: #1a1a1a; --bg: #fff; }
+  @media (prefers-color-scheme: dark) { :root { --line: #3a3a3a; --dim: #9a9a9a; --bar: #7f9bf0; --ink: #ededed; --bg: #171717; } }
+  * { box-sizing: border-box; }
+  body { margin: 0 auto; padding: 32px 20px 72px; max-width: 860px; background: var(--bg); color: var(--ink);
+         font: 15px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; }
+  h1 { font-size: 25px; font-weight: 500; margin: 0 0 4px; }
+  h2 { font-size: 17px; font-weight: 500; margin: 40px 0 6px; }
+  p { margin: 8px 0; max-width: 64ch; }
+  .sub { color: var(--dim); margin-top: 0; }
+  .headline { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 8px; }
+  .card { flex: 1 1 150px; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; }
+  .card .big { font-size: 27px; font-weight: 500; letter-spacing: -0.5px; }
+  .card .label { color: var(--dim); font-size: 13px; }
+  .card .was { color: var(--dim); font-size: 13px; }
+  table { border-collapse: collapse; width: 100%; margin: 12px 0; }
+  th, td { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  th { color: var(--dim); font-weight: 500; font-size: 13px; }
+  td:not(:first-child), th:not(:first-child) { text-align: right; }
+  td:nth-child(2) { text-align: left; white-space: nowrap; }
+  .bar { display: inline-block; height: 9px; border-radius: 2px; background: var(--bar); vertical-align: middle; margin-right: 8px; }
+  .n { font-variant-numeric: tabular-nums; }
+  svg { max-width: 100%; height: auto; }
+  .note { color: var(--dim); font-size: 13px; }
+  @media (max-width: 560px) { .bar { display: none; } td:nth-child(2) { text-align: right; } }
+</style>
+
+<h1>What will this flat rent for?</h1>
+<p class="sub">Two weekly asking rents for every City of Sydney flat, with a car space and without, as at 31 July 2026.</p>
+
+<div class="headline">
+  <div class="card">
+    <div class="big">$52.29</div>
+    <div class="label">Typical miss a week</div>
+    <div class="was">was $100.00</div>
+  </div>
+  <div class="card">
+    <div class="big">72.2%</div>
+    <div class="label">Within $100 a week</div>
+    <div class="was">was 55.0%</div>
+  </div>
+  <div class="card">
+    <div class="big">0.834</div>
+    <div class="label">R squared</div>
+    <div class="was">was 0.618</div>
+  </div>
+  <div class="card">
+    <div class="big">3,954</div>
+    <div class="label">Later adverts scored</div>
+    <div class="was">none used to build it</div>
+  </div>
+</div>
+
+<h2>What moved the miss</h2>
+<p>Every row is scored on the same 3,954 adverts dated 1 May to 31 July 2026. Groups are built only from
+adverts dated by 30 April 2026. A suburb estimate gives every flat in a suburb the same rent. Swapping the suburb for
+the flat's own building is what closes the gap, and bringing older asks forward to April 2026 is what makes the
+building comparison reach 95% of flats instead of a quarter of them.</p>
+<table>
+  <thead><tr><th>Estimate</th><th>Typical miss</th><th>Within $100</th><th>R squared</th></tr></thead>
+  <tbody>
+<tr><td>Suburb and bedrooms</td><td><span class="bar" style="width:180px"></span><span class='n'>$100.00</span></td><td>55.0%</td><td>0.618</td></tr>
+<tr><td>Add parking</td><td><span class="bar" style="width:180px"></span><span class='n'>$100.00</span></td><td>56.8%</td><td>0.646</td></tr>
+<tr><td>Same building, recent year</td><td><span class="bar" style="width:107px"></span><span class='n'>$59.41</span></td><td>69.4%</td><td>0.781</td></tr>
+<tr><td>Older asks brought forward</td><td><span class="bar" style="width:96px"></span><span class='n'>$53.48</span></td><td>72.0%</td><td>0.820</td></tr>
+<tr><td>Plus nearest buildings</td><td><span class="bar" style="width:94px"></span><span class='n'>$52.29</span></td><td>72.2%</td><td>0.834</td></tr>
+  </tbody>
+</table>
+
+<h2>Where each estimate came from</h2>
+<p>Flats compared with their own building miss by far less than any other group. A building that has never advertised
+a flat type borrows from the 10 nearest buildings within 1,000 metres that have,
+and falls back to its suburb only when none is in reach.</p>
+<table>
+  <thead><tr><th>Comparison used</th><th>Later adverts</th><th>Typical miss</th><th>Within $100</th></tr></thead>
+  <tbody>
+<tr><td>building advertised both</td><td><span class="bar" style="width:180px"></span><span class='n'>1,855.0</span></td><td>$50.00</td><td>76.3%</td></tr>
+<tr><td>building, parking gap</td><td><span class="bar" style="width:171px"></span><span class='n'>1,766.0</span></td><td>$50.00</td><td>73.0%</td></tr>
+<tr><td>nearby buildings</td><td><span class="bar" style="width:32px"></span><span class='n'>327.0</span></td><td>$115.13</td><td>45.0%</td></tr>
+<tr><td>nearby buildings, parking gap</td><td><span class="bar" style="width:2px"></span><span class='n'>6.0</span></td><td>$248.68</td><td>33.3%</td></tr>
+  </tbody>
+</table>
+
+<h2>How far off each advert was</h2>
+<table>
+  <thead><tr><th>Miss</th><th>Later adverts</th><th>Share</th></tr></thead>
+  <tbody>
+<tr><td>under $25</td><td><span class="bar" style="width:180px"></span><span class='n'>1,044</span></td><td>26.4%</td></tr>
+<tr><td>$25 to $50</td><td><span class="bar" style="width:127px"></span><span class='n'>735</span></td><td>18.6%</td></tr>
+<tr><td>$50 to $100</td><td><span class="bar" style="width:169px"></span><span class='n'>981</span></td><td>24.8%</td></tr>
+<tr><td>$100 to $200</td><td><span class="bar" style="width:136px"></span><span class='n'>790</span></td><td>20.0%</td></tr>
+<tr><td>over $200</td><td><span class="bar" style="width:70px"></span><span class='n'>404</span></td><td>10.2%</td></tr>
+  </tbody>
+</table>
+
+<h2>Bringing older asks forward</h2>
+<p>An ask from 2023Q2 cannot be pooled with one from 2026Q2 as it stands. Each is scaled by how the median
+weekly ask across the city moved between its quarter and April 2026, then weighted down as it ages, with a three year
+half life. Across this window the median ask moved +1%.</p>
+<svg viewBox="0 0 600 170" role="img"
+     aria-label="Median weekly asking rent across the city by quarter, 2023Q2 to 2026Q2, ranging $825 to $900">
+  <line x1="56" y1="30" x2="590" y2="30" stroke="var(--line)" stroke-width="1"/>
+  <line x1="56" y1="140" x2="590" y2="140" stroke="var(--line)" stroke-width="1"/>
+  <polyline points="56.0,41.0 99.3,132.7 142.7,103.3 186.0,103.3 229.3,140.0 272.7,140.0 316.0,103.3 359.3,66.7 402.7,103.3 446.0,103.3 489.3,30.0 532.7,30.0 576.0,30.0" fill="none" stroke="var(--bar)" stroke-width="2"/>
+  <text x="50" y="34" font-size="11" fill="var(--dim)" text-anchor="end">$900</text>
+  <text x="50" y="144" font-size="11" fill="var(--dim)" text-anchor="end">$825</text>
+  <text x="56" y="162" font-size="11" fill="var(--dim)">2023Q2</text>
+  <text x="590" y="162" font-size="11" fill="var(--dim)" text-anchor="end">2026Q2</text>
+</svg>
+
+<h2>What a car space adds</h2>
+<p>Measured on groups that advertised both answers. Where a building has only ever advertised one, the other rent is
+that one plus this gap, capped so a car space never lowers the ask. Where a building advertised both, its own two
+medians stand, which is why 6,323 flats come out with parking priced lower.</p>
+<table>
+  <thead><tr><th>Flat size</th><th>Typical gap a week</th></tr></thead>
+  <tbody>
+<tr><td>Studio</td><td><span class="bar" style="width:12px"></span><span class='n'>$31.76</span></td></tr>
+<tr><td>1 bedroom</td><td><span class="bar" style="width:18px"></span><span class='n'>$48.40</span></td></tr>
+<tr><td>2 bedrooms</td><td><span class="bar" style="width:23px"></span><span class='n'>$61.76</span></td></tr>
+<tr><td>3 bedrooms</td><td><span class="bar" style="width:40px"></span><span class='n'>$104.76</span></td></tr>
+<tr><td>4 bedrooms</td><td><span class="bar" style="width:180px"></span><span class='n'>$476.47</span></td></tr>
+  </tbody>
+</table>
+
+<h2>The hand-in file</h2>
+<p>All 65,777 flats across 33 suburbs get both rents, including the
+16,094 that have never been advertised. Those come from other flats
+in the same building. Refitted on every advert dated by 31 July 2026.</p>
+<table>
+  <thead><tr><th>Comparison used</th><th>Flats</th><th>Share</th></tr></thead>
+  <tbody>
+<tr><td>building, parking gap</td><td><span class="bar" style="width:180px"></span><span class='n'>32,027</span></td><td>48.7%</td></tr>
+<tr><td>building advertised both</td><td><span class="bar" style="width:171px"></span><span class='n'>30,439</span></td><td>46.3%</td></tr>
+<tr><td>nearby buildings</td><td><span class="bar" style="width:18px"></span><span class='n'>3,178</span></td><td>4.8%</td></tr>
+<tr><td>nearby buildings, parking gap</td><td><span class="bar" style="width:2px"></span><span class='n'>117</span></td><td>0.2%</td></tr>
+<tr><td>nearest bedroom count</td><td><span class="bar" style="width:2px"></span><span class='n'>11</span></td><td>0.0%</td></tr>
+<tr><td>bedrooms, parking gap</td><td><span class="bar" style="width:2px"></span><span class='n'>5</span></td><td>0.0%</td></tr>
+  </tbody>
+</table>
+<p class="note">Rents run $237 to $5,143 a
+week. No blanks, no duplicate addresses, median parking gap $76.43.</p>
+
+<h2>What this is built from</h2>
+<p class="note">112,457 past rental adverts from January 2012 to 31 July 2026, of which 41,868 fall
+inside the three year window and carry a bedroom count and a parking answer. Nothing dated after 31 July 2026 is read.
+Floor level was tested and dropped: it did not lower the miss, because a flat's own building already carries it.</p>
+</html>
