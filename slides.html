@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Uni Trifecta | Rents demo</title>
+<style>
+  :root {
+    --navy: #0b1f3a; --ink: #1f2933; --dim: #5b6770; --line: #d9dee3; --panel: #f2f4f7;
+    --accent: #3b82f6; --teal: #14b8a6; --red: #d7153a; --muted: #9aa5b1; --light: #93c5fd;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { height: 100%; background: #111827; font-family: -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; }
+  .stage { position: fixed; inset: 0 0 50px; overflow: hidden; }
+  .deck { position: absolute; left: 50%; top: 50%; width: 960px; height: 540px; transform-origin: center; }
+  .slide {
+    position: absolute; inset: 0; background: #fff; color: var(--ink); padding: 44px 56px 40px;
+    display: none; flex-direction: column; overflow: hidden; border-radius: 6px;
+  }
+  .slide.active { display: flex; animation: fade .35s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .slide::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--accent); }
+  .slide.dark { background: var(--navy); color: #fff; }
+  .slide.dark::before { display: none; }
+  .kicker { font-size: 11px; font-weight: 700; letter-spacing: .06em; color: var(--accent); text-transform: uppercase; }
+  h1 { font-size: 28px; line-height: 1.2; margin-top: 10px; }
+  .footer {
+    position: absolute; left: 56px; right: 56px; bottom: 18px; display: flex; justify-content: space-between;
+    font-size: 9px; color: var(--muted);
+  }
+  .dark .footer { color: #64748b; }
+  .pill {
+    display: inline-block; background: var(--teal); color: var(--navy); font-size: 11px; font-weight: 700;
+    padding: 7px 26px; border-radius: 14px; letter-spacing: .05em; align-self: flex-start;
+  }
+  .big-q { font-size: 38px; line-height: 1.15; margin-top: 34px; max-width: 800px; }
+
+  /* range bar */
+  .range { position: relative; height: 18px; margin: 70px 34px 0; border-radius: 9px; background: #1e3a5f; }
+  .range .fill { position: absolute; top: 0; bottom: 0; border-radius: 9px; background: var(--accent); }
+  .range .tick { position: absolute; top: -26px; height: 70px; width: 0; border-left: 1.5px solid #fff; }
+  .range .tick.median { border-left: 3px solid #fca5a5; }
+  .range .tick span { position: absolute; transform: translateX(-50%); white-space: nowrap; font-weight: 700; font-size: 15px; }
+  .range .tick span.below { top: 78px; }
+  .range .tick span.above { top: -24px; color: #fca5a5; }
+  .caption { text-align: center; color: #94a3b8; font-size: 13px; margin-top: 70px; }
+
+  /* cards */
+  .cards { display: grid; gap: 19px; margin-top: auto; }
+  .cards.three { grid-template-columns: repeat(3, 1fr); }
+  .cards.two { grid-template-columns: repeat(2, 1fr); }
+  .card { background: var(--panel); border-radius: 10px; padding: 20px; }
+  .card b { display: block; font-size: 30px; color: var(--accent); margin-bottom: 8px; }
+  .card b.plain { color: var(--ink); }
+  .card p { font-size: 12.5px; color: var(--dim); line-height: 1.35; }
+  .callout { display: flex; align-items: center; gap: 40px; background: var(--panel); border-radius: 10px; padding: 24px; margin-top: 30px; margin-bottom: 30px; }
+  .callout b { font-size: 40px; color: var(--red); }
+  .callout span { font-size: 18px; }
+
+  /* flow */
+  .flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 54px; }
+  .flow div { position: relative; background: var(--panel); border-radius: 10px; padding: 18px 16px; min-height: 120px; }
+  .flow div:first-child { background: var(--navy); color: #fff; }
+  .flow div:first-child p { color: #cbd5e1; }
+  .flow div:not(:last-child)::after {
+    content: "→"; position: absolute; right: -19px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px;
+  }
+  .flow h3 { font-size: 15px; line-height: 1.2; margin-bottom: 10px; }
+  .flow p { font-size: 12px; color: var(--dim); line-height: 1.3; }
+
+  ul { list-style: none; padding: 0; }
+  li { position: relative; padding-left: 18px; font-size: 15px; line-height: 1.35; margin-bottom: 9px; }
+  li::before { content: ""; position: absolute; left: 2px; top: 7px; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .bullets { margin-top: 30px; }
+  .small li { font-size: 13.5px; margin-bottom: 7px; }
+
+  /* bars */
+  .bars { margin-top: 34px; display: grid; gap: 18px; }
+  .bar { display: grid; grid-template-columns: 304px 1fr; align-items: center; font-size: 15px; }
+  .bar .track { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+  .bar .b { height: 34px; border-radius: 6px; }
+  .note { font-size: 12px; color: var(--dim); margin-top: 20px; }
+
+  /* steps */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 19px; margin-top: 50px; }
+  .step { background: var(--panel); border-radius: 10px; padding: 24px 20px; min-height: 190px; }
+  .step i {
+    display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%;
+    background: var(--accent); color: #fff; font-style: normal; font-weight: 700; font-size: 20px; margin-bottom: 18px;
+  }
+  .step h3 { font-size: 18px; margin-bottom: 8px; }
+  .step p { font-size: 14px; color: var(--dim); line-height: 1.35; }
+  .link { color: var(--accent); font-weight: 700; font-size: 18px; text-decoration: none; }
+
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; margin-top: 34px; }
+  .cols h3 { font-size: 18px; margin-bottom: 14px; }
+  .thanks {
+    margin-top: auto; margin-bottom: 30px; background: var(--navy); color: #fff; border-radius: 10px; padding: 26px;
+    text-align: center; font-size: 22px; font-weight: 700;
+  }
+
+  /* controls */
+  .hud {
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%); display: flex; gap: 10px; align-items: center;
+    color: #9ca3af; font-size: 12px; user-select: none; white-space: nowrap;
+  }
+  .hud button { background: #1f2937; color: #e5e7eb; border: 0; border-radius: 6px; padding: 6px 12px; cursor: pointer; font-size: 13px; }
+  .notes {
+    position: fixed; left: 0; right: 0; bottom: 48px; margin: 0 auto; max-width: 900px; background: rgba(17,24,39,.94);
+    color: #f9fafb; font-size: 16px; line-height: 1.5; padding: 16px 20px; border-radius: 8px; display: none;
+  }
+  .notes.show { display: block; }
+  .notes small { display: block; color: #93c5fd; font-weight: 700; margin-bottom: 6px; }
+  .progress { position: fixed; top: 0; left: 0; height: 3px; background: var(--teal); transition: width .3s; }
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="stage"><div class="deck" id="deck">
+
+  <section class="slide dark" data-time="0:00 – 0:15"
+    data-notes="Hi, we're Uni Trifecta. Quick question: what should a two-bedroom flat with parking in Zetland rent for? The suburb median says $1,165 a week. But real adverts ask anywhere from $978 to $1,500, depending on the building.">
+    <span class="pill">UNI TRIFECTA</span>
+    <h1 class="big-q">What should a 2-bedroom flat with parking in Zetland rent for?</h1>
+    <div class="range">
+      <div class="fill" style="left:11.7%; right:9.1%"></div>
+      <div class="tick" style="left:11.7%"><span class="below">$978</span></div>
+      <div class="tick median" style="left:40%"><span class="above">Suburb median $1,165</span></div>
+      <div class="tick" style="left:90.9%"><span class="below">$1,500</span></div>
+    </div>
+    <p class="caption">Typical weekly ask, building by building</p>
+  </section>
+
+  <section class="slide" data-time="0:15 – 0:35"
+    data-notes="And that's the big finding. The building a flat is in sets its rent. The floor barely matters, about a dollar fifty a week per floor. A car space is worth around $76 a week. So a suburb average misses by about $100 a week.">
+    <span class="kicker">What we found</span>
+    <h1>The building sets the rent. Not the suburb, not the floor.</h1>
+    <div class="cards three" style="margin-top:60px">
+      <div class="card"><b>$522</b><p>a week between the cheapest and dearest Zetland building, same flat type</p></div>
+      <div class="card"><b>$1.46</b><p>a week per extra floor, once you know the building</p></div>
+      <div class="card"><b>$76</b><p>a week for a car space, typically</p></div>
+    </div>
+    <div class="callout"><b>$100</b><span>a week: how far a suburb average typically misses a flat's asking rent</span></div>
+  </section>
+
+  <section class="slide" data-time="0:35 – 1:05"
+    data-notes="So we price every one of the 65,777 flats in the City of Sydney building by building. We start with the closest evidence we have. If the flat itself was advertised before, its own past rents count most. Then its building, matched on bedrooms, bathrooms and parking. If the building has barely advertised, we lean on the nearest buildings, and only then on the suburb. Older adverts are brought up to July 2026 prices, and every flat gets two rents: with a car space and without.">
+    <span class="kicker">How it works</span>
+    <h1>Start with the closest evidence. Widen only when it runs out.</h1>
+    <div class="flow">
+      <div><h3>This flat's own past rents</h3><p>count most when it advertised before</p></div>
+      <div><h3>Same building</h3><p>same bedrooms, bathrooms and parking</p></div>
+      <div><h3>Nearest buildings</h3><p>within 1 km, closer ones count more</p></div>
+      <div><h3>Suburb</h3><p>only if nothing is close</p></div>
+    </div>
+    <ul class="bullets">
+      <li>65,777 flats, each with two weekly rents: with a car space and without.</li>
+      <li>Older adverts are brought up to July 2026 prices, and newer ones count more.</li>
+      <li>Nothing dated after 31 July 2026 is used.</li>
+    </ul>
+  </section>
+
+  <section class="slide" data-time="1:05 – 1:30"
+    data-notes="We only test on adverts the model hasn't seen yet. Across twenty rolling two-month tests, the typical miss is about $51 a week. On May to July this year it was $45, against $100 for the suburb method. About three in four estimates land within $100.">
+    <span class="kicker">Does it work?</span>
+    <h1>Tested only on adverts the model had not seen.</h1>
+    <div class="bars">
+      <div class="bar"><span>Suburb average (the example)</span>
+        <span class="track"><span class="b" style="width:440px;background:var(--muted)"></span>$100.00</span></div>
+      <div class="bar"><b>Ours, 20 rolling two-month tests</b>
+        <span class="track"><span class="b" style="width:224px;background:var(--light)"></span>$51.00</span></div>
+      <div class="bar"><b>Ours, May to July 2026</b>
+        <span class="track"><span class="b" style="width:200px;background:var(--accent)"></span>$45.37</span></div>
+    </div>
+    <p class="note">Typical (median) miss, dollars a week. Lower is better.</p>
+    <div class="cards two" style="margin-bottom:30px">
+      <div class="card"><b>3 in 4</b><p>estimates land within $100 (74% rolling, 77% May to July; suburb method 57%)</p></div>
+      <div class="card"><b class="plain">Same setup</b><p>learn from adverts up to a month's end, then score the next two months, just like the real test</p></div>
+    </div>
+  </section>
+
+  <section class="slide" data-time="1:30 – 1:55"
+    data-notes="And we turned it into something tenants can use. Type your address, say 841/2C Defries Avenue, Zetland. Bedrooms and parking fill in from the records. Enter what you pay, and it shows how you compare with similar flats, and how confident the estimate is.">
+    <span class="kicker">Live demo</span>
+    <h1>Is my rent fair? Ask in 20 seconds.</h1>
+    <div class="steps">
+      <div class="step"><i>1</i><h3>Type your address</h3><p>e.g. 841/2C Defries Avenue, Zetland</p></div>
+      <div class="step"><i>2</i><h3>Check the details</h3><p>bedrooms and parking fill in from the records</p></div>
+      <div class="step"><i>3</i><h3>Enter your rent</h3><p>see how it compares with similar flats</p></div>
+    </div>
+    <p style="font-size:15px;margin-top:26px">The range tightens when we know more: about 7% wide for a flat with its own advert history.</p>
+    <p style="margin-top:22px"><a class="link" href="index.html" target="_blank">microburbsdataanalysis.vercel.app</a></p>
+  </section>
+
+  <section class="slide" data-time="1:55 – 2:10"
+    data-notes="It's weakest on buildings that have never advertised and on renovated flats asking way above their building. Next, we'd add Microburbs data like transport and schools for those. Building by building, not suburb by suburb. Thanks!">
+    <span class="kicker">What's next</span>
+    <h1>Building by building, not suburb by suburb.</h1>
+    <div class="cols">
+      <div><h3>Where it's weaker</h3><ul>
+        <li>Buildings that have never advertised: no evidence of their own.</li>
+        <li>Renovated or furnished flats asking well above their building (about 1 ask in 8).</li>
+      </ul></div>
+      <div><h3>What we'd add</h3><ul>
+        <li>Microburbs data such as transport, schools and new development for buildings with no adverts.</li>
+        <li>Monthly refresh, so every check uses the latest adverts.</li>
+      </ul></div>
+    </div>
+    <div class="thanks">Thanks! &nbsp; microburbsdataanalysis.vercel.app</div>
+  </section>
+
+  <section class="slide" data-time="Backup, not part of the talk"
+    data-notes="Only if judges ask. Lead with the rolling $51: May to July was looked at across versions, so it flatters us a little.">
+    <span class="kicker">Backup for questions</span>
+    <h1>The technical details, if asked.</h1>
+    <ul class="bullets small">
+      <li>Estimate: weighted median of past asking rents. Older asks are brought forward with a citywide quarterly index and count half as much every 3 years.</li>
+      <li>Order of evidence: own past asks (75% weight) &gt; building (same bedrooms and parking; bathrooms if 3+ adverts) &gt; 10 nearest buildings within 1 km (weight halves every 500 m) &gt; suburb &gt; bedrooms.</li>
+      <li>Thin buildings are pulled toward their neighbours. Each parking side is adjusted by its own evidence.</li>
+      <li>Missing parking side: other rent plus or minus the local car-space gap, capped at 25% of rent.</li>
+      <li>Testing: settings chosen on rolling tests before May 2026. May to July was looked at across versions, so the rolling $51 is the fairer guide.</li>
+      <li>Hard cases (rolling tests): no own history $63 typical miss; no usable building history $90.</li>
+      <li>Tried and dropped: floor adjustment, forcing parking above no parking, a growth lift after 31 July.</li>
+    </ul>
+  </section>
+
+</div></div>
+
+<div class="notes" id="notes"></div>
+<div class="hud">
+  <button id="prev" aria-label="Previous slide">&larr;</button>
+  <span id="count"></span>
+  <button id="next" aria-label="Next slide">&rarr;</button>
+  <button id="toggle">Notes (N)</button>
+  <span>F for full screen</span>
+</div>
+
+<script>
+const slides = [...document.querySelectorAll(".slide")];
+const deck = document.getElementById("deck");
+const notes = document.getElementById("notes");
+let current = Math.min(Math.max(parseInt(location.hash.slice(1), 10) - 1 || 0, 0), slides.length - 1);
+
+slides.forEach((s, i) => {
+  const f = document.createElement("div");
+  f.className = "footer";
+  f.innerHTML = `<span>Uni Trifecta | Microburbs Hackathon | Rents task | City of Sydney flats at 31 July 2026</span><span>${i + 1}</span>`;
+  s.appendChild(f);
+});
+
+function fit() {
+  const scale = Math.min(innerWidth / 1000, (innerHeight - 70) / 560);
+  deck.style.transform = `translate(-50%, -50%) scale(${scale})`;
+}
+
+function show(i) {
+  current = Math.min(Math.max(i, 0), slides.length - 1);
+  slides.forEach((s, j) => s.classList.toggle("active", j === current));
+  document.getElementById("count").textContent = `${current + 1} / ${slides.length}`;
+  document.getElementById("progress").style.width = `${(current + 1) / slides.length * 100}%`;
+  const s = slides[current];
+  notes.innerHTML = `<small>${s.dataset.time}</small>${s.dataset.notes}`;
+  history.replaceState(null, "", `#${current + 1}`);
+}
+
+document.addEventListener("keydown", e => {
+  if (["ArrowRight", "PageDown", " ", "Enter"].includes(e.key)) show(current + 1);
+  else if (["ArrowLeft", "PageUp", "Backspace"].includes(e.key)) show(current - 1);
+  else if (e.key === "Home") show(0);
+  else if (e.key === "End") show(slides.length - 1);
+  else if (e.key.toLowerCase() === "n") notes.classList.toggle("show");
+  else if (e.key.toLowerCase() === "f") document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+  else return;
+  e.preventDefault();
+});
+document.getElementById("prev").onclick = () => show(current - 1);
+document.getElementById("next").onclick = () => show(current + 1);
+document.getElementById("toggle").onclick = () => notes.classList.toggle("show");
+deck.addEventListener("click", e => { if (!e.target.closest("a")) show(current + 1); });
+addEventListener("resize", fit);
+fit();
+show(current);
+</script>
+</body>
+</html>
