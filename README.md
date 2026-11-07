@@ -38,30 +38,36 @@ The May–July 2026 adverts were used once, to score the frozen rule. The final 
 | Same building, older asks brought forward | $53.48 | 72.0% | 0.820 |
 | Plus nearest buildings | $52.29 | 72.2% | 0.834 |
 
-## Files
+## Layout
+
+The repository root is the website, deployed as a static site on Vercel. The analysis lives in `analysis/`, which
+`.vercelignore` keeps out of the deployment.
 
 | File | What it is |
 |---|---|
-| `rent_model.py` | The estimator (`RentModel`) and the `check` scoring function |
-| `make_rents.py` | Refits as at 31 July 2026 and writes `rents_<team>.csv` |
-| `make_report.py` | Builds `report.html` (findings, separate check, method) |
-| `make_dashboard.py` | Builds `dashboard.html` |
-| `make_rent_check.py` | Builds `rent_check.html`, where a tenant finds their flat, enters their rent and sees how it compares |
-| `baseline_rent.ipynb` | Reproduces the example's $100 baseline, then each improvement step |
-| `rents_<team>.csv` | `gnaf_id, rent_with_car_space, rent_without_car_space` for all 65,777 flats |
+| `index.html` | Rent check: a tenant finds their flat, enters their rent and sees how it compares |
+| `report.html` | Findings, separate check and method |
+| `dashboard.html` | Summary dashboard |
+| `analysis/rent_model.py` | The estimator (`RentModel`) and the `check` scoring function |
+| `analysis/make_rents.py` | Refits as at 31 July 2026 and writes `analysis/rents_<team>.csv` |
+| `analysis/make_report.py` | Builds `report.html` |
+| `analysis/make_dashboard.py` | Builds `dashboard.html` |
+| `analysis/make_rent_check.py` | Builds `index.html` |
+| `analysis/baseline_rent.ipynb` | Reproduces the example's $100 baseline, then each improvement step |
+| `analysis/rents_<team>.csv` | `gnaf_id, rent_with_car_space, rent_without_car_space` for all 65,777 flats |
 
 ## Running it
 
-Put the three supplied CSVs in this folder (`rents-past-leases-city-of-sydney.csv`,
-`rents-input-flats-city-of-sydney.csv`, `blocks-homes-and-people-2021-2026.csv`), then:
+Put the three supplied CSVs in `analysis/` (`rents-past-leases-city-of-sydney.csv`,
+`rents-input-flats-city-of-sydney.csv`, `blocks-homes-and-people-2021-2026.csv`), then from the repository root:
 
 ```bash
 python3 -m venv .venv
 .venv/bin/pip install pandas numpy jupyter
-.venv/bin/python make_rents.py --team <team-name>
-.venv/bin/python make_report.py
-.venv/bin/python make_dashboard.py
-.venv/bin/python make_rent_check.py
+.venv/bin/python analysis/make_rents.py --team <team-name>
+.venv/bin/python analysis/make_report.py
+.venv/bin/python analysis/make_dashboard.py
+.venv/bin/python analysis/make_rent_check.py
 ```
 
 Tested with Python 3.9.6, pandas 2.3.3 and numpy 2.0.2. A full run takes under a minute.
@@ -69,4 +75,4 @@ Tested with Python 3.9.6, pandas 2.3.3 and numpy 2.0.2. A full run takes under a
 ## Data rules
 
 The supplied CSVs are for use on the day only, so they are not republished here and are listed in `.gitignore`.
-No API keys or API output are stored in this folder, and the live for-rent listings endpoint was not used.
+No API keys or API output are stored in this repository, and the live for-rent listings endpoint was not used.

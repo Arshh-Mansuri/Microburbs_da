@@ -1,0 +1,5 @@
+analysis/
+.venv/
+*.csv
+*.ipynb
+*.py

@@ -21,7 +21,7 @@ AS_AT = pd.Timestamp("2026-07-31")
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--team", required=True, help="team name, lowercase, spaces as hyphens")
-    parser.add_argument("--folder", default=".")
+    parser.add_argument("--folder", default=str(rm.DATA_DIR))
     args = parser.parse_args()
 
     leases = rm.load_leases(args.folder)

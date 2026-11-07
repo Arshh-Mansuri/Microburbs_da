@@ -1,4 +1,4 @@
-"""Build rent_check.html: a tenant enters their flat and rent, and sees how it
+"""Build the site's index.html: a tenant enters their flat and rent, and sees how it
 compares with what similar flats were asking at 31 July 2026.
 
     python make_rent_check.py
@@ -147,9 +147,9 @@ def main() -> None:
     }
     payload = json.dumps(data, separators=(",", ":"))
     html = PAGE.replace("__DATA__", payload)
-    with open("rent_check.html", "w", encoding="utf-8") as handle:
+    with open(rm.SITE_DIR / "index.html", "w", encoding="utf-8") as handle:
         handle.write(html)
-    print(f"Wrote rent_check.html: {len(flat_rows):,} flats, {len(building_rows):,} buildings, "
+    print(f"Wrote index.html: {len(flat_rows):,} flats, {len(building_rows):,} buildings, "
           f"{len(html) / 1e6:.1f} MB")
     for name, found in data["spread"].items():
         print(name, found)
@@ -245,6 +245,7 @@ PAGE = r"""<!doctype html>
   Estimates come from earlier asking rents in public rental adverts, brought forward to 31 July 2026. They describe
   what new adverts ask, not what every sitting tenant pays, and they cannot see condition, views, furniture or
   inclusions. This is a guide, not legal or financial advice.
+  <p><a href="report.html">How the estimates were made and checked</a> &middot; <a href="dashboard.html">Dashboard</a></p>
 </div></footer>
 <script id="data" type="application/json">__DATA__</script>
 <script>

@@ -53,10 +53,10 @@ def accuracy(test, rent):
 
 
 def main() -> None:
-    raw = pd.read_csv(rm.LEASES)
+    raw = pd.read_csv(rm.DATA_DIR / rm.LEASES)
     raw["listing_date"] = pd.to_datetime(raw["listing_date"])
-    leases = rm.load_leases(".")
-    flats = rm.load_flats(".")
+    leases = rm.load_leases()
+    flats = rm.load_flats()
 
     earlier = leases.loc[leases["listing_date"] <= AS_AT]
     test = leases.loc[leases["listing_date"].between(TEST_START, TEST_END)].copy()
@@ -468,7 +468,7 @@ orientation or building height, and condition is not recorded anywhere.</p>
 </html>
 """
 
-    with open("report.html", "w") as handle:
+    with open(rm.SITE_DIR / "report.html", "w") as handle:
         handle.write(page)
     print(f"Wrote report.html: miss {money(ours['miss'], 2)}, within {ours['within']:.1f}%, R2 {ours['r2']:.3f}")
 

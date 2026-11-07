@@ -14,9 +14,14 @@ Nothing dated after the as-at date is read.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+# The supplied CSVs sit beside this file. Built pages go to the site root above it.
+DATA_DIR = Path(__file__).resolve().parent
+SITE_DIR = DATA_DIR.parent
 
 LEASES = "rents-past-leases-city-of-sydney.csv"
 FLATS = "rents-input-flats-city-of-sydney.csv"
@@ -39,7 +44,7 @@ METRES_PER_DEGREE_LAT = 110_950
 METRES_PER_DEGREE_LON = 92_390
 
 
-def load_leases(folder: str = ".") -> pd.DataFrame:
+def load_leases(folder: str | Path = DATA_DIR) -> pd.DataFrame:
     """Past adverts that carry a bedroom count and a parking answer."""
     leases = pd.read_csv(f"{folder}/{LEASES}")
     leases["listing_date"] = pd.to_datetime(leases["listing_date"])
@@ -49,7 +54,7 @@ def load_leases(folder: str = ".") -> pd.DataFrame:
     return leases.loc[usable].copy()
 
 
-def load_flats(folder: str = ".") -> pd.DataFrame:
+def load_flats(folder: str | Path = DATA_DIR) -> pd.DataFrame:
     flats = pd.read_csv(f"{folder}/{FLATS}")
     for column in ("bedrooms", "car_space", "floor_level"):
         flats[column] = pd.to_numeric(flats[column], errors="coerce")

@@ -55,9 +55,9 @@ def bar(value, largest, width=180):
 
 
 def main() -> None:
-    leases = rm.load_leases(".")
-    flats = rm.load_flats(".")
-    raw = pd.read_csv("rents-past-leases-city-of-sydney.csv")
+    leases = rm.load_leases()
+    flats = rm.load_flats()
+    raw = pd.read_csv(rm.DATA_DIR / rm.LEASES)
 
     earlier = leases.loc[leases["listing_date"] <= AS_AT]
     test = leases.loc[leases["listing_date"].between(TEST_START, TEST_END)].copy()
@@ -308,7 +308,7 @@ Floor level was tested and dropped: it did not lower the miss, because a flat's 
 </html>
 """
 
-    with open("dashboard.html", "w") as handle:
+    with open(rm.SITE_DIR / "dashboard.html", "w") as handle:
         handle.write(page)
     print(f"Wrote dashboard.html: miss ${finish['miss']:,.2f}, within $100 {finish['within']:.1f}%, R2 {finish['r2']:.3f}")
 

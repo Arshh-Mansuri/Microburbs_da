@@ -1,6 +1,7 @@
 .venv/
+.vercel/
 .ipynb_checkpoints/
+__pycache__/
 rents-input-flats-city-of-sydney.csv
 rents-past-leases-city-of-sydney.csv
 blocks-homes-and-people-2021-2026.csv
-rent_check.html
