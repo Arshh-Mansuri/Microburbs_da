@@ -68,7 +68,8 @@ def main() -> None:
         as_at=AS_AT, max_age_years=1, half_life_years=None, neighbours=0, **rm.BUILDING_ONLY
     ).fit(earlier)
     no_neighbours = rm.RentModel(as_at=AS_AT, neighbours=0, **rm.BUILDING_ONLY).fit(earlier)
-    with_neighbours = rm.RentModel(as_at=AS_AT, **rm.BUILDING_ONLY).fit(earlier)
+    with_neighbours = rm.RentModel(as_at=AS_AT, shrink_adverts=0, distance_half_m=None, **rm.BUILDING_ONLY).fit(earlier)
+    unshrunk = rm.RentModel(as_at=AS_AT, shrink_adverts=0, distance_half_m=None).fit(earlier)
 
     suburb_bed = group_median(recent, ["suburb", "bedrooms"], 10)
     bed_only = group_median(recent, "bedrooms", 10)
@@ -84,7 +85,8 @@ def main() -> None:
         ("Same building, recent year", building_only.predict(test)),
         ("Older asks brought forward", no_neighbours.predict(test)),
         ("Plus nearest buildings", with_neighbours.predict(test)),
-        ("Plus own past asks and bathrooms", model.predict(test)),
+        ("Plus own past asks and bathrooms", unshrunk.predict(test)),
+        ("Plus thin buildings pulled toward neighbours", model.predict(test)),
     ]
     scored = [(name, accuracy(test, rent)) for name, rent in steps]
     start, finish = scored[0][1], scored[-1][1]

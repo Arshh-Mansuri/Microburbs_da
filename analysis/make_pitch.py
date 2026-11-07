@@ -36,6 +36,7 @@ STEPS = [
     ("Older asks brought forward", 53.48, 72.0, 0.820),
     ("Plus nearest buildings", 52.29, 72.2, 0.834),
     ("Plus own past asks, bathrooms", 45.00, 77.1, 0.872),
+    ("Plus thin buildings pulled to neighbours", 45.44, 77.2, 0.871),
 ]
 
 
@@ -154,7 +155,7 @@ def insight_slide(c):
     card(c, 345, 200, 270, 160, "$1.46", "a week per floor, across 18,153 adverts in 1,709 same-building groups.", ACCENT)
     card(c, 634, 200, 270, 160, "$76", "a week for a car space, about $3,971 a year. Studio $32, 3-bedroom $105.", ACCENT)
     bullet_list(c, [
-        "11.9% of new asks were more than $100 above their building's going rate. In Surry Hills and Potts Point, about 17%.",
+        "12.0% of new asks were more than $100 above their building's going rate. In Potts Point and Surry Hills, about 17%.",
         "Flats in fast-growing blocks (homes up more than 30% since 2021) asked 2.5% above their suburb. Blocks with no new homes asked 2.6% below.",
         "Relisted flats asked 3.8% more than last time, but 0.6% less once the market move is taken out.",
     ], 56, 160, 850, size=14, gap=6)
@@ -165,7 +166,7 @@ def method_slide(c):
     boxes = [
         ("This flat's own past asks", "75% of the weight where it advertised before"),
         ("Same building", "bedrooms, bathrooms, parking; one advert is enough"),
-        ("10 nearest buildings", "within 1 km, where the building never advertised"),
+        ("10 nearest buildings", "within 1 km, closer ones count more; thin buildings lean on them"),
         ("Suburb, then bedrooms", "only when nothing is in reach"),
     ]
     x, y, w, h, gap = 56, 250, 196, 120, 22
@@ -198,21 +199,21 @@ def method_slide(c):
 
 def results_slide(c):
     slide(c, 5, "Separate check: 3,954 adverts, May to July 2026", "Typical miss: $100 down to $45 a week.")
-    top, bar_h, gap, x_label, x_bar, max_w = 370, 30, 16, 56, 330, 420
+    top, bar_h, gap, x_label, x_bar, max_w = 380, 25, 12, 56, 330, 420
     for i, (name, miss, within, r2) in enumerate(STEPS):
         y = top - i * (bar_h + gap)
         last = i == len(STEPS) - 1
         c.setFont("Helvetica-Bold" if last else "Helvetica", 13.5)
         c.setFillColor(INK)
-        c.drawString(x_label, y + 10, name)
+        c.drawString(x_label, y + 8, name)
         c.setFillColor(ACCENT if last else (MUTED if i == 0 else HexColor("#bfd3f2")))
         c.roundRect(x_bar, y, max_w * miss / 100, bar_h, 5, stroke=0, fill=1)
         c.setFont("Helvetica-Bold", 13.5)
         c.setFillColor(INK)
-        c.drawString(x_bar + max_w * miss / 100 + 10, y + 10, f"${miss:.2f}")
-    card(c, 56, 60, 270, 100, "77.1%", "of asks within $100 (was 56.8%)", ACCENT)
-    card(c, 345, 60, 270, 100, "0.872", "R squared: share of rent variation explained (was 0.645)", ACCENT)
-    card(c, 634, 60, 270, 100, "$0.97", "typical bias: half asked more, half asked less")
+        c.drawString(x_bar + max_w * miss / 100 + 10, y + 8, f"${miss:.2f}")
+    card(c, 56, 60, 270, 100, "77.2%", "of asks within $100 (was 56.8%)", ACCENT)
+    card(c, 345, 60, 270, 100, "0.871", "R squared: share of rent variation explained (was 0.645)", ACCENT)
+    card(c, 634, 60, 270, 100, "$61.47", "typical miss for flats that never advertised before (was $64.12)")
 
 
 def trust_slide(c):
@@ -220,9 +221,10 @@ def trust_slide(c):
     bullet_list(c, [
         "Every setting was chosen on three earlier folds: Aug-Oct 2025, Nov 2025-Jan 2026 and Feb-Apr 2026. "
         "The May-July 2026 adverts were scored once, after the rule was frozen.",
-        "No drift across the test window: May $44.12, June $43.53, July $49.04. The hidden ads run two months past the as-at date.",
-        "Rebuilt before each of seven earlier quarters, the typical miss stayed between $50 and $62.",
-        "Drawing 1,699 adverts at random (the hidden set's size) 2,000 times: typical miss $42.38 to $47.30, nine times in ten.",
+        "No drift across the test window: May $44.12, June $44.12, July $47.76. The hidden ads run two months past the as-at date.",
+        "Rebuilt before each of seven earlier quarters, the typical miss stayed between $50 and $60.",
+        "Drawing 1,699 adverts at random (the hidden set's size) 2,000 times: typical miss $43.09 to $47.16, nine times in ten.",
+        "Hard cases scored on their own: flats that never advertised before miss by $61.47; buildings with no matching flat type by $108.",
         "Floor level was tested the same way and dropped: it made two of the three folds worse.",
     ], 56, 370, 850, size=15, gap=10)
 
@@ -252,7 +254,7 @@ def who_slide(c):
     slide(c, 8, "Who it helps", "One estimate, three decisions.")
     cols = [
         ("Tenants", "Check an advert or a rent rise against the same building before signing. "
-                    "11.9% of asks sat more than $100 above the building's rate."),
+                    "12.0% of asks sat more than $100 above the building's rate."),
         ("Landlords and agents", "Price against their own building and flat type, with and without a car space, "
                                  "instead of a suburb figure that can be $300 off."),
         ("Microburbs", "Building-level rent for every flat in the city, ready for property profiles, "
@@ -272,7 +274,7 @@ def limits_slide(c):
     slide(c, 9, "What remains uncertain", "Honest limits, and what we would add next.")
     para(c, "Limits", 56, 380, 400, size=17, font="Helvetica-Bold")
     bullet_list(c, [
-        "Buildings that never advertised a flat type still miss by about $98 a week, against $43 with building evidence.",
+        "Buildings that never advertised a flat type still miss by about $100 a week, against $43 with building evidence.",
         "Flats that never advertised themselves can expect nearer $59 than $45.",
         "Condition, view and orientation are not in the data.",
     ], 56, 348, 400, size=14, gap=8)

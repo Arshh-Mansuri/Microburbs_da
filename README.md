@@ -4,8 +4,8 @@ Microburbs Hackathon, task 4. We estimate two weekly asking rents, one with a ca
 65,777 flats in the City of Sydney as at 31 July 2026.
 
 On a separate check (trained on adverts to 30 April 2026, then tested on 3,954 adverts from May to July 2026), the
-typical miss is **$45.00 a week**, compared with $100.00 for the example suburb method. **77.1%** of estimates land
-within $100, compared with 56.8% for the example, and R squared is 0.872.
+typical miss is **$45.44 a week**, compared with $100.00 for the example suburb method. **77.2%** of estimates land
+within $100, compared with 56.8% for the example, and R squared is 0.871.
 
 ## What decides a flat's rent
 
@@ -29,6 +29,8 @@ about $1.46 a week once the building is known. `report.html` covers these findin
 6. Two fields then move both rents for the individual flat. Where 3 or more adverts in the building share its
    bedrooms, bathrooms and parking, the estimate shifts to their median. Where the flat itself advertised before,
    its own asks, brought forward the same way, take 75% of the weight and the building the rest.
+7. A building with few adverts is pulled toward its neighbours, which count as half an advert, and nearby buildings
+   count for less with distance, halving every 500 metres.
 
 All settings were chosen on three earlier folds (validating on Aug–Oct 2025, Nov 2025–Jan 2026 and Feb–Apr 2026).
 The May–July 2026 adverts were used once, to score the frozen rule. The final rents refit on every advert up to
@@ -41,6 +43,16 @@ The May–July 2026 adverts were used once, to score the frozen rule. The final 
 | Same building, older asks brought forward | $53.48 | 72.0% | 0.820 |
 | Plus nearest buildings | $52.29 | 72.2% | 0.834 |
 | Plus the flat's own past asks and bathrooms | $45.00 | 77.1% | 0.872 |
+| Plus thin buildings pulled toward their neighbours | $45.44 | 77.2% | 0.871 |
+
+The last step was chosen on the earlier folds ($49.45 to $48.35) and won or tied in six of seven earlier quarters.
+It costs 44 cents on the May–July headline but helps the hard cases, scored separately by `analysis/validate_groups.py`:
+
+| May–July group | Adverts | Median miss before / after | Mean miss before / after | Within $100 before / after |
+|---|---|---|---|---|
+| Flat never advertised before | 1,225 | $64.12 / $61.47 | $105.06 / $103.83 | 67.3% / 68.1% |
+| Building, no matching flat type | 120 | $101.25 / $108.41 | $155.62 / $165.16 | 50.0% / 48.3% |
+| Building never advertised | 25 | $127.47 / $124.12 | $204.45 / $208.02 | 36.0% / 36.0% |
 
 On the rent check, half of new adverts for a flat with its own advert history landed within a band 7.4% wide
 around the estimate, against about 13% for a flat priced from its building alone.
@@ -61,6 +73,10 @@ The repository root is the website, deployed as a static site on Vercel. The ana
 | `analysis/make_dashboard.py` | Builds `dashboard.html` |
 | `analysis/make_rent_check.py` | Builds `index.html` |
 | `analysis/tune_fields.py` | Chooses the own-advert weight and bathroom minimum on the three earlier folds |
+| `analysis/tune_sparse.py` | Chooses the pull toward neighbours and the distance weighting on the same folds |
+| `analysis/tune_premium.py` | Tests forcing a car space to price above no car space (it costs accuracy, so not used) |
+| `analysis/validate_groups.py` | Scores never-advertised flats and buildings separately from the headline |
+| `analysis/make_pitch.py` | Builds `pitch.pdf` |
 | `analysis/baseline_rent.ipynb` | Reproduces the example's $100 baseline, then each improvement step |
 | `analysis/rents_<team>.csv` | `gnaf_id, rent_with_car_space, rent_without_car_space` for all 65,777 flats |
 

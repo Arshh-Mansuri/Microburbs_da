@@ -38,6 +38,11 @@ OWN_WEIGHT = 0.75
 USE_BATHROOMS = True
 MIN_BATHROOM_ADS = 3
 BUILDING_ONLY = {"own_weight": 0.0, "use_bathrooms": False}
+# A building's median is pulled toward its neighbours as if they were this many
+# full-weight adverts, so one old advert no longer sets the rent on its own.
+SHRINK_ADVERTS = 0.5
+# Nearby buildings count for less with distance, halving every this many metres.
+DISTANCE_HALF_M = 500
 
 # A derived car space never lowers the ask, and never adds more than this share
 # of it. Thin groups otherwise throw out gaps wider than the rent itself.
@@ -83,8 +88,12 @@ class RentModel:
     own_weight: float = OWN_WEIGHT
     use_bathrooms: bool = USE_BATHROOMS
     min_bathroom_ads: int = MIN_BATHROOM_ADS
+    shrink_adverts: float = SHRINK_ADVERTS
+    distance_half_m: float = DISTANCE_HALF_M
 
     index: pd.Series = None
+    building_weight: dict = field(default_factory=dict)
+    nearby_ids: dict = field(default_factory=dict)
     own: dict = field(default_factory=dict)
     building_bathrooms: dict = field(default_factory=dict)
     nearby: dict = field(default_factory=dict)
@@ -147,6 +156,7 @@ class RentModel:
             return found
 
         self.building = medians(["building_address", "bedrooms", "car_space"], self.min_building_ads)
+        self.building_weight = ads.groupby(["building_address", "bedrooms", "car_space"])["weight"].sum().to_dict()
         self.suburb = medians(["suburb", "bedrooms", "car_space"], self.min_suburb_ads)
         self.suburb_any_parking = medians(["suburb", "bedrooms"], self.min_suburb_ads)
         self.by_bedrooms = medians("bedrooms", self.min_suburb_ads)
@@ -163,20 +173,22 @@ class RentModel:
 
         located = ads.dropna(subset=["latitude", "longitude"])
         places = located.groupby("building_address")[["latitude", "longitude"]].median()
-        self.nearby = {}
+        self.nearby, self.nearby_ids = {}, {}
         for (building_address, bedrooms, car_space), rent in self.building.items():
             if building_address in places.index:
                 lat, lon = places.loc[building_address]
                 self.nearby.setdefault((bedrooms, car_space), []).append(
                     (lat * METRES_PER_DEGREE_LAT, lon * METRES_PER_DEGREE_LON, rent)
                 )
+                self.nearby_ids.setdefault((bedrooms, car_space), []).append(building_address)
         self.nearby = {key: np.array(rows) for key, rows in self.nearby.items()}
+        self.nearby_ids = {key: np.array(ids) for key, ids in self.nearby_ids.items()}
 
         self.citywide = float(ads["rent_now"].median())
         self.adverts_used = len(ads)
         return self
 
-    def _near(self, bedrooms: float, car_space: float, latitude: float, longitude: float):
+    def _near(self, bedrooms: float, car_space: float, latitude: float, longitude: float, exclude=None):
         """Median rent of the closest buildings that advertised this flat type."""
         if self.neighbours <= 0 or pd.isna(latitude) or pd.isna(longitude):
             return None
@@ -187,11 +199,28 @@ class RentModel:
             rows[:, 0] - latitude * METRES_PER_DEGREE_LAT,
             rows[:, 1] - longitude * METRES_PER_DEGREE_LON,
         )
+        if exclude is not None:
+            distance = np.where(self.nearby_ids[(bedrooms, car_space)] == exclude, np.inf, distance)
         closest = np.argsort(distance)[: self.neighbours]
         closest = closest[distance[closest] <= self.neighbour_reach_m]
         if len(closest) == 0:
             return None
+        if self.distance_half_m:
+            weights = 0.5 ** (distance[closest] / self.distance_half_m)
+            return weighted_median(rows[closest, 2], weights)
         return float(np.median(rows[closest, 2]))
+
+    def _shrunk(self, rent, building_address, bedrooms, car_space, suburb, latitude, longitude):
+        """Pull a thinly advertised building toward its neighbours, then its suburb."""
+        if rent is None or self.shrink_adverts <= 0:
+            return rent
+        prior = self._near(bedrooms, car_space, latitude, longitude, exclude=building_address)
+        if prior is None:
+            prior = self.suburb.get((suburb, bedrooms, car_space))
+        if prior is None:
+            return rent
+        weight = self.building_weight.get((building_address, bedrooms, car_space), 0.0)
+        return (weight * rent + self.shrink_adverts * prior) / (weight + self.shrink_adverts)
 
     @staticmethod
     def _nearest(table: dict, bedrooms: float):
@@ -215,8 +244,11 @@ class RentModel:
         return min(max(self.parking_gap(suburb, bedrooms), 0.0), MAX_GAP_SHARE * anchor)
 
     def _pair(self, building_address, bedrooms, suburb, latitude=np.nan, longitude=np.nan):
-        with_parking = self.building.get((building_address, bedrooms, 1.0))
-        without_parking = self.building.get((building_address, bedrooms, 0.0))
+        place = (suburb, latitude, longitude)
+        with_parking = self._shrunk(self.building.get((building_address, bedrooms, 1.0)),
+                                    building_address, bedrooms, 1.0, *place)
+        without_parking = self._shrunk(self.building.get((building_address, bedrooms, 0.0)),
+                                       building_address, bedrooms, 0.0, *place)
         if with_parking is not None and without_parking is not None:
             return with_parking, without_parking, "building advertised both"
         if with_parking is not None:

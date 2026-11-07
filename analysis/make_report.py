@@ -15,6 +15,7 @@ import numpy as np
 import pandas as pd
 
 import rent_model as rm
+import validate_groups as vg
 
 AS_AT = pd.Timestamp("2026-04-30")
 TEST_START = pd.Timestamp("2026-05-01")
@@ -69,7 +70,8 @@ def main() -> None:
         as_at=AS_AT, max_age_years=1, half_life_years=None, neighbours=0, **rm.BUILDING_ONLY
     ).fit(earlier)
     no_neighbours = rm.RentModel(as_at=AS_AT, neighbours=0, **rm.BUILDING_ONLY).fit(earlier)
-    with_neighbours = rm.RentModel(as_at=AS_AT, **rm.BUILDING_ONLY).fit(earlier)
+    with_neighbours = rm.RentModel(as_at=AS_AT, shrink_adverts=0, distance_half_m=None, **rm.BUILDING_ONLY).fit(earlier)
+    unshrunk = rm.RentModel(as_at=AS_AT, shrink_adverts=0, distance_half_m=None).fit(earlier)
 
     example = accuracy(test, example_estimate(leases, test))
     ours_rent = model.predict(test)
@@ -82,8 +84,17 @@ def main() -> None:
         ("Same building, last year of adverts only", accuracy(test, last_year.predict(test))),
         ("Same building, older asks brought forward", accuracy(test, suburb_only_rent)),
         ("Plus nearest buildings where a building never advertised", building_level),
-        ("Plus the flat's own past asks and its bathrooms", ours),
+        ("Plus the flat's own past asks and its bathrooms", accuracy(test, unshrunk.predict(test))),
+        ("Plus thin buildings pulled toward their neighbours", ours),
     ]
+
+    # The cases the headline hides, decided only from adverts before May 2026.
+    unshrunk_miss = (unshrunk.predict(test) - test["weekly_rent"]).abs().to_numpy()
+    hard_cases = []
+    for name, chosen in vg.groups(earlier, test).items():
+        for label, miss in (("before", unshrunk_miss[chosen]), ("after", ours["misses"].to_numpy()[chosen])):
+            hard_cases.append((name, label, int(chosen.sum()), float(np.median(miss)), float(np.mean(miss)),
+                               float((miss <= 100).mean() * 100)))
 
     test["estimate"] = ours_rent
     test["came_from"] = model.predict_both(test)["source"]
@@ -432,7 +443,12 @@ to bedrooms.</p>
 <p>Two fields then move both rents for the individual flat. Where at least {rm.MIN_BATHROOM_ADS} earlier adverts in the
 building share its bedrooms, bathrooms and parking, the estimate shifts to their median. Where the flat itself
 advertised before, its own asks, brought forward the same way, take {rm.OWN_WEIGHT:.0%} of the weight and the building
-the rest. Adding them took the typical miss from {money(building_level['miss'], 2)} to {money(ours['miss'], 2)}.</p>
+the rest. Adding them took the typical miss from {money(building_level['miss'], 2)} to
+{money(steps[-2][1]['miss'], 2)}.</p>
+
+<p>Last, a building with few adverts is pulled toward its neighbours. Its own median counts in proportion to how many
+adverts back it, weighted by age, and the neighbours count as {rm.SHRINK_ADVERTS} of an advert. Nearby buildings now
+count for less with distance, halving every {rm.DISTANCE_HALF_M} metres.</p>
 
 {table(["Comparison used", "Later adverts", "Typical miss", "Within $100"],
        [(name, f"{r.n:,}", money(r.typical, 2), f"{r.within:.1f}%") for name, r in sources.iterrows()])}
@@ -441,7 +457,7 @@ the rest. Adding them took the typical miss from {money(building_level['miss'], 
 
 <p>The three year reach, the three year half life, the one advert minimum and the {rm.NEIGHBOURS} nearest buildings
 within {rm.NEIGHBOUR_REACH_M:,} metres, the {rm.OWN_WEIGHT:.0%} weight on a flat's own asks and the
-{rm.MIN_BATHROOM_ADS} advert bathroom minimum were chosen on three earlier checks,
+{rm.MIN_BATHROOM_ADS} advert bathroom minimum, and the pull toward neighbours were chosen on three earlier checks,
 scored on February to April 2026, November 2025 to January 2026, and August to October 2025. The May to July 2026
 adverts played no part in choosing them. Floor level was tested the same way and left out, because it raised the
 typical miss on two of the three.</p>
@@ -454,6 +470,17 @@ the as-at date:</p>
 <p>Rebuilding the estimate before each of seven earlier quarters and scoring that quarter gave:</p>
 {table(["Quarter", "Adverts", "Typical miss", "Within $100"],
        [(q, f"{n:,}", money(m, 2), f"{w:.1f}%") for q, n, m, w in quarters])}
+
+<p>The headline mixes easy and hard cases, so each was scored on its own. Groups are set from adverts before May 2026
+only. Flats that never advertised before stand in for the 16,094 flats in the hand-in with no advert history.</p>
+{table(["Group", "Rule", "Adverts", "Median miss", "Mean miss", "Within $100"],
+       [(g, "Before pulling toward neighbours" if label == "before" else "Final", f"{n:,}", money(med, 2),
+         money(mean, 2), f"{w:.1f}%") for g, label, n, med, mean, w in hard_cases])}
+
+<p>Pulling thin buildings toward their neighbours was chosen on the three earlier checks, where it cut the typical miss
+from $49.45 to $48.35 and helped flats that had never advertised. Across seven earlier quarters it won or tied in six.
+On May to July it helped never-advertised flats and buildings but cost {money(ours['miss'] - steps[-2][1]['miss'], 2)}
+on the headline, well inside the range a different draw of adverts would give.</p>
 
 <p>Drawing 1,699 adverts at random, the size of the hidden set, 2,000 times put the typical miss between
 {money(low_band, 2)} and {money(high_band, 2)} nine times in ten.</p>
@@ -473,8 +500,7 @@ can expect.</p>
 
 <p>In the hand-in file, {lower_with_parking:,} flats price a car space below no car space, because their own building's
 adverts did. We kept those rather than override the evidence. On the three earlier checks, pulling such pairs to their
-midpoint raised the typical miss from $49.45 to $50.00, and raising the car space rent to match raised it to $50.00
-with fewer adverts within $100.</p>
+midpoint, or raising the car space rent to match, each raised the typical miss by about 55 cents.</p>
 
 <p>We did not test which way a flat faces or whether nearby buildings block light. The supplied files hold no
 orientation or building height, and condition is not recorded anywhere.</p>
