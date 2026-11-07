@@ -265,7 +265,56 @@ const D = JSON.parse(document.getElementById("data").textContent);
 const STEPS = 4;
 const BED_LABEL = ["Studio", "1 bedroom", "2 bedrooms", "3 bedrooms", "4 bedrooms", "5 or more bedrooms"];
 const BED_SHORT = ["Studio", "1", "2", "3", "4", "5+"];
-const index = D.flats.map(f => ((f[0] ? f[0] + ", " : "") + D.streets[f[1]]).toUpperCase());
+const UNIT_WORDS = new Set(["UNIT", "U", "APT", "APARTMENT", "FLAT", "SUITE", "LEVEL", "LVL", "NO"]);
+const ABBREVIATIONS = {
+  ST: "STREET", RD: "ROAD", AVE: "AVENUE", AV: "AVENUE", PL: "PLACE", PDE: "PARADE", HWY: "HIGHWAY",
+  CRES: "CRESCENT", CR: "CRESCENT", LN: "LANE", DR: "DRIVE", TCE: "TERRACE", SQ: "SQUARE", CCT: "CIRCUIT",
+  CL: "CLOSE", BLVD: "BOULEVARD", BVD: "BOULEVARD", WY: "WAY", CT: "COURT", GR: "GROVE", ESP: "ESPLANADE",
+  PKWY: "PARKWAY", RDWY: "ROADWAY", MT: "MOUNT", WHF: "WHARF", STH: "SOUTH", NTH: "NORTH",
+};
+const words = text => text.toUpperCase().replace(/[^A-Z0-9-]+/g, " ").trim().split(/\s+/).filter(Boolean);
+// Each flat as " WORD WORD ... " so a word can be matched whole, with "29-31" also listed as 29 and 31.
+const index = D.flats.map(f => {
+  const all = words((f[0] ? f[0] + " " : "") + D.streets[f[1]]);
+  return " " + all.concat(...all.filter(w => w.includes("-")).map(w => w.split("-"))).join(" ") + " ";
+});
+const unitOf = D.flats.map(f => (f[0] ? words(f[0]).pop() : ""));
+const numbersOf = D.flats.map(f => {
+  const first = words(D.streets[f[1]])[0] || "";
+  return [first, ...first.split("-")];
+});
+
+function findFlats(text, limit) {
+  const raw = text.toUpperCase().replace(/\b(UNIT|APT|U)(\d)/g, "$1 $2");
+  const finished = /\s$/.test(text);
+  const tokens = words(raw.replace(/\//g, " ")).filter(w => !UNIT_WORDS.has(w));
+  if (!tokens.length || (tokens.length === 1 && tokens[0].length < 2)) return [];
+  const numbers = tokens.filter(w => /^\d/.test(w));
+  // "31/29 X St" and "Unit 31, 29 X St" both mean unit 31 at number 29.
+  const unitFirst = numbers.length >= 2 || /^\s*\d+\w*\s*\//.test(raw) || /^\s*(UNIT|U|APT|APARTMENT|FLAT)\b/.test(raw);
+  const wanted = tokens.map((w, i) => {
+    const last = i === tokens.length - 1 && !finished;
+    const full = ABBREVIATIONS[w];
+    return hay => hay.includes(" " + w + " ") || (full && hay.includes(" " + full + " ")) ||
+                  ((last || !/^\d/.test(w)) && hay.includes(" " + w));
+  });
+  const found = [];
+  for (let i = 0; i < index.length; i++) {
+    if (!wanted.every(test => test(index[i]))) continue;
+    let score = 0;
+    if (unitFirst && numbers.length) {
+      if (unitOf[i] === numbers[0]) score += 4;
+      if (numbers.length > 1 && numbersOf[i].includes(numbers[1])) score += 4;
+    } else if (numbers.length) {
+      if (numbersOf[i].includes(numbers[0])) score += 3;
+      if (unitOf[i] === numbers[0]) score += 1;
+    }
+    tokens.forEach(w => { if (index[i].includes(" " + w + " ")) score += 1; });
+    found.push([score, parseInt(unitOf[i], 10) || 0, i]);
+  }
+  found.sort((a, b) => b[0] - a[0] || a[1] - b[1]);
+  return found.slice(0, limit).map(r => r[2]);
+}
 const state = { step: 1, flat: null, suburb: null, bedrooms: null, parking: null, rent: null };
 
 const $ = html => { const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content; };
@@ -468,12 +517,9 @@ const wire = {
     const q = app.querySelector("#q"), results = app.querySelector("#results");
     const pick = app.querySelector("#suburbPick"), sub = app.querySelector("#suburb"), subNext = app.querySelector("#suburbNext");
     const search = () => {
-      const words = q.value.toUpperCase().replace(/[,/]/g, " ").split(/\s+/).filter(Boolean);
       results.innerHTML = "";
-      if (!words.length || (words.length === 1 && words[0].length < 2)) return;
-      const found = [];
-      for (let i = 0; i < index.length && found.length < 8; i++)
-        if (words.every(w => index[i].includes(w))) found.push(i);
+      if (!q.value.trim()) return;
+      const found = findFlats(q.value, 8);
       results.innerHTML = found.length
         ? found.map(i => `<button data-flat="${i}">${esc(addressOf(i))}<br><small>${D.suburbs[D.buildings[D.flats[i][2]][0]]}</small></button>`).join("")
         : `<button disabled><small>No flats match. Try fewer words, or choose the suburb below.</small></button>`;
