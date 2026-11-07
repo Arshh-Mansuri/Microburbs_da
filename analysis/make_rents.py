@@ -50,7 +50,7 @@ def main() -> None:
         raise SystemExit("blank rent")
 
     team = args.team.strip().lower().replace(" ", "-")
-    path = f"{args.folder}/rents_{team}.csv"
+    path = f"{rm.SITE_DIR}/rents_{team}.csv"
     out.to_csv(path, index=False)
 
     print(f"Adverts used: {model.adverts_used:,}")

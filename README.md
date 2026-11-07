@@ -9,6 +9,51 @@ the typical miss is $45.37, compared with $100.00 for the example suburb method,
 56.8%, and R squared 0.871. May to July was looked at across several versions, so treat $45.37 as optimistic; the
 rolling figure is the fairer guide to the scored test.
 
+## What we built
+
+- **Two rents for every flat.** `rents_uni-trifecta.csv` gives a weekly asking rent with a car space and without
+  for every one of the 65,777 flats, priced building by building rather than suburb by suburb.
+- **A rent check for tenants.** At [microburbsdataanalysis.vercel.app](https://microburbsdataanalysis.vercel.app),
+  you type your address, check the bedrooms and parking, and enter your rent. It shows how your rent compares with
+  similar flats, and how wide the usual range is.
+- **A report and dashboard.** `report.html` and `dashboard.html` show what we found, how we checked it, and what
+  did not work.
+
+## Who it helps
+
+- **Tenants.** Check an advert or a rent rise against the same building before signing. About 12% of new asks
+  were more than $100 a week above their building's usual rate.
+- **Landlords and agents.** Price against their own building and flat type, with and without parking, instead of
+  a suburb figure that can be $300 off.
+- **Microburbs.** Building-level rents for every flat in the city, ready for property pages and rental yield.
+
+## The data
+
+- **Past adverts.** Asking rents from past rental adverts, each with bedrooms, bathrooms, parking, building and
+  date. Only adverts up to 31 July 2026 are used.
+- **The flats.** The 65,777 flats to price, with each flat's building, bedrooms, bathrooms, parking and location.
+- **Blocks file.** Homes and people by block, 2021 to 2026, used in the findings.
+
+The supplied CSVs are not in this repository. No API keys or API output are stored, and the live for-rent
+listings endpoint was not used.
+
+## The clever step
+
+**A flat's rent is set by its building, not its suburb, so we price from the narrowest evidence first.**
+
+In Zetland, two-bedroom flats with parking ask anywhere from $978 to $1,500 a week depending on the building,
+while the suburb median is $1,165. Once the building is known, floor level adds only about $1.46 a week per floor.
+So each flat is priced from:
+
+1. its own past asks, if it advertised before,
+2. its building's adverts for the same bedrooms, bathrooms and parking,
+3. the nearest buildings, with closer ones counting more,
+4. and only then the suburb.
+
+Older asks are brought up to July 2026 prices first. Thinly advertised buildings are pulled toward their
+neighbours, so one old advert cannot set the rent on its own. Together this takes the typical miss from $100 for the
+suburb method to $45.37 on May to July, and $51.00 on the rolling tests.
+
 ## For the judges
 
 Team **Uni Trifecta**. Live rent check: [microburbsdataanalysis.vercel.app](https://microburbsdataanalysis.vercel.app).
@@ -17,17 +62,18 @@ Team **Uni Trifecta**. Live rent check: [microburbsdataanalysis.vercel.app](http
 
 | File | What it is |
 |---|---|
-| `analysis/rents_uni-trifecta.csv` | Both weekly rents for all 65,777 flats, in input order |
-| `report.html` | Findings, the separate check, method and limits |
+| `rents_uni-trifecta.csv` | Both weekly rents for all 65,777 flats, in input order |
+| `report.html` | Data, method, what worked, what did not, and our own held-out check |
 | `pitch.mp4` | 45-second pitch |
-| `demo.mp4` | Three-minute walkthrough of the analysis and the rent check |
+| `demo.mp4` | Walkthrough of the data and the rent check, under 3 minutes |
 | `README.md` | This file |
+| `slides.html`, `demo_slides.pdf`, `demo_script.md` | Slides and script for the demo (extra) |
 | `pitch.pdf` | Slides behind the pitch (extra) |
 | `dashboard.html` | One-page summary of the results (extra) |
 
-The CSV has exactly the columns `gnaf_id, rent_with_car_space, rent_without_car_space`. Every gnaf_id appears
-once and both rents are filled for every flat, so no scored answer is blank. All values are positive and end in
-whole dollars or 50 cents.
+The CSV is UTF-8 with one header row and exactly the columns `gnaf_id, rent_with_car_space, rent_without_car_space`.
+Every gnaf_id appears once and both rents are filled for every flat, so no scored answer is blank. All values are
+positive and end in whole dollars or 50 cents.
 
 ### Results in brief
 
@@ -160,7 +206,7 @@ The repository root is the website, deployed as a static site on Vercel. The ana
 | `report.html` | Findings, separate check and method |
 | `dashboard.html` | Summary dashboard |
 | `analysis/rent_model.py` | The estimator (`RentModel`) and the `check` scoring function |
-| `analysis/make_rents.py` | Refits as at 31 July 2026 and writes `analysis/rents_<team>.csv` |
+| `analysis/make_rents.py` | Refits as at 31 July 2026 and writes `rents_<team>.csv` at the repository root |
 | `analysis/make_report.py` | Builds `report.html` |
 | `analysis/make_dashboard.py` | Builds `dashboard.html` |
 | `analysis/make_rent_check.py` | Builds `index.html` |
@@ -172,7 +218,8 @@ The repository root is the website, deployed as a static site on Vercel. The ana
 | `analysis/validate_groups.py` | Scores never-advertised flats and buildings separately from the headline |
 | `analysis/make_pitch.py` | Builds `pitch.pdf` |
 | `analysis/baseline_rent.ipynb` | Reproduces the example's $100 baseline, then each improvement step |
-| `analysis/rents_<team>.csv` | `gnaf_id, rent_with_car_space, rent_without_car_space` for all 65,777 flats |
+| `analysis/make_demo.py` | Builds `demo_slides.pdf` |
+| `rents_uni-trifecta.csv` | `gnaf_id, rent_with_car_space, rent_without_car_space` for all 65,777 flats |
 
 ## Running it
 

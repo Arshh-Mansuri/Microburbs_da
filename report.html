@@ -244,7 +244,7 @@ the estimate explains. The same adverts under the example report's method gave a
 </svg>
 <p class="legend"><span class="key muted"></span>Suburb, bedrooms and parking <span class="key accent"></span>Our estimate: own building, then the flat's own past asks</p>
 
-<table><thead><tr><th>Estimate</th><th>Typical miss</th><th>Within $100</th><th>R squared</th></tr></thead><tbody><tr><td>Suburb, bedrooms and parking (the example report)</td><td>$100.00</td><td>56.8%</td><td>0.645</td></tr><tr><td>Same building, last year of adverts only</td><td>$60.00</td><td>68.5%</td><td>0.782</td></tr><tr><td>Same building, older asks brought forward</td><td>$55.71</td><td>70.9%</td><td>0.821</td></tr><tr><td>Plus nearest buildings where a building never advertised</td><td>$52.29</td><td>72.2%</td><td>0.834</td></tr><tr><td>Plus the flat's own past asks and its bathrooms</td><td>$45.14</td><td>77.2%</td><td>0.872</td></tr><tr><td>Plus thin buildings pulled toward their neighbours</td><td>$45.37</td><td>77.4%</td><td>0.871</td></tr></tbody></table>
+<table><thead><tr><th>Estimate</th><th>Typical miss</th><th>Within $100</th><th>R squared</th></tr></thead><tbody><tr><td>Suburb, bedrooms and parking (the example report)</td><td>$100.00</td><td>56.8%</td><td>0.645</td></tr><tr><td>Same building, last year of adverts only</td><td>$60.00</td><td>68.5%</td><td>0.782</td></tr><tr><td>Same building, older asks brought forward</td><td>$55.71</td><td>70.9%</td><td>0.821</td></tr><tr><td>Plus nearest buildings where a building never advertised</td><td>$52.29</td><td>72.2%</td><td>0.834</td></tr><tr><td>Plus the flat's own past asks and its bathrooms</td><td>$45.00</td><td>77.1%</td><td>0.872</td></tr><tr><td>Plus thin buildings pulled toward their neighbours</td><td>$45.44</td><td>77.2%</td><td>0.871</td></tr><tr><td>Plus each parking side moved by its own evidence</td><td>$45.37</td><td>77.4%</td><td>0.871</td></tr></tbody></table>
 
 <p>We built the estimate using adverts dated by 30 April 2026. We kept the 1 May to 31 July 2026 adverts aside until
 the estimate was fixed. The Microburbs Hackathon scores hidden August to September 2026 adverts separately.</p>
@@ -278,7 +278,8 @@ to bedrooms.</p>
 building share its bedrooms, bathrooms and parking, the estimate shifts to their median. Where the flat itself
 advertised before, its own asks, brought forward the same way, take 75% of the weight and the building
 the rest. Adding them took the typical miss from $52.29 to
-$45.14.</p>
+$45.00. Each parking side now moves by its own evidence first, borrowing the other side's
+only when it has none.</p>
 
 <p>Last, a building with few adverts is pulled toward its neighbours. Its own median counts in proportion to how many
 adverts back it, weighted by age, and the neighbours count as 0.5 of an advert. Nearby buildings now
@@ -304,15 +305,40 @@ the as-at date:</p>
 
 <p>The headline mixes easy and hard cases, so each was scored on its own. Groups are set from adverts before May 2026
 only. Flats that never advertised before stand in for the 16,094 flats in the hand-in with no advert history.</p>
-<table><thead><tr><th>Group</th><th>Rule</th><th>Adverts</th><th>Median miss</th><th>Mean miss</th><th>Within $100</th></tr></thead><tbody><tr><td>All later adverts</td><td>Before pulling toward neighbours</td><td>3,954</td><td>$45.14</td><td>$78.75</td><td>77.2%</td></tr><tr><td>All later adverts</td><td>Final</td><td>3,954</td><td>$45.37</td><td>$78.29</td><td>77.4%</td></tr><tr><td>Flat never advertised before</td><td>Before pulling toward neighbours</td><td>1,225</td><td>$63.18</td><td>$104.92</td><td>67.3%</td></tr><tr><td>Flat never advertised before</td><td>Final</td><td>1,225</td><td>$61.43</td><td>$103.98</td><td>68.3%</td></tr><tr><td>Building, no matching flat type</td><td>Before pulling toward neighbours</td><td>120</td><td>$101.25</td><td>$155.62</td><td>50.0%</td></tr><tr><td>Building, no matching flat type</td><td>Final</td><td>120</td><td>$108.41</td><td>$165.16</td><td>48.3%</td></tr><tr><td>Building never advertised</td><td>Before pulling toward neighbours</td><td>25</td><td>$127.47</td><td>$204.45</td><td>36.0%</td></tr><tr><td>Building never advertised</td><td>Final</td><td>25</td><td>$124.12</td><td>$208.02</td><td>36.0%</td></tr></tbody></table>
+<table><thead><tr><th>Group</th><th>Rule</th><th>Adverts</th><th>Median miss</th><th>Mean miss</th><th>Within $100</th></tr></thead><tbody><tr><td>All later adverts</td><td>Before pulling toward neighbours</td><td>3,954</td><td>$45.00</td><td>$78.77</td><td>77.1%</td></tr><tr><td>All later adverts</td><td>Final</td><td>3,954</td><td>$45.37</td><td>$78.29</td><td>77.4%</td></tr><tr><td>Flat never advertised before</td><td>Before pulling toward neighbours</td><td>1,225</td><td>$64.12</td><td>$105.06</td><td>67.3%</td></tr><tr><td>Flat never advertised before</td><td>Final</td><td>1,225</td><td>$61.43</td><td>$103.98</td><td>68.3%</td></tr><tr><td>Building, no matching flat type</td><td>Before pulling toward neighbours</td><td>120</td><td>$101.25</td><td>$155.62</td><td>50.0%</td></tr><tr><td>Building, no matching flat type</td><td>Final</td><td>120</td><td>$108.41</td><td>$165.16</td><td>48.3%</td></tr><tr><td>Building never advertised</td><td>Before pulling toward neighbours</td><td>25</td><td>$127.47</td><td>$204.45</td><td>36.0%</td></tr><tr><td>Building never advertised</td><td>Final</td><td>25</td><td>$124.12</td><td>$208.02</td><td>36.0%</td></tr></tbody></table>
 
 <p>Pulling thin buildings toward their neighbours was chosen on the three earlier checks, where it cut the typical miss
 from $49.45 to $48.35 and helped flats that had never advertised. Across seven earlier quarters it won or tied in six.
-On May to July it helped never-advertised flats and buildings but cost $0.23
-on the headline, well inside the range a different draw of adverts would give.</p>
+On May to July it helped never-advertised flats and buildings but cost
+$0.44 on the headline, well inside the range a different draw of
+adverts would give.</p>
+
+<p>May to July was looked at across several versions, so its figure is a little optimistic. As a cleaner guide we also
+ran 20 rolling tests that mirror the hand-in, each fitting on adverts up to the end of a month and scoring the next two
+months, with the last ending in April 2026. Pooled over 45,592 adverts the typical miss was $51.00, with 73.9% within
+$100. Moving each parking side by its own evidence was chosen there: it beat one shared shift in 8 windows, tied 10 and
+lost 2. On the same tests the flat's own past asks carried nearly all the gain from the two fields ($57.00 to $51.50),
+while bathrooms alone gave $57.00 to $56.50 and added little once own asks were in.</p>
 
 <p>Drawing 1,699 adverts at random, the size of the hidden set, 2,000 times put the typical miss between
 $42.86 and $47.27 nine times in ten.</p>
+
+<h2>What did not work?</h2>
+
+<p>Several ideas looked sensible and lost on the checks, so they are not in the estimate:</p>
+<ul>
+<li>Floor level. Once the building is known, each floor adds about $1.46 a week, and adding it raised the typical
+miss on two of the three earlier checks.</li>
+<li>Forcing a car space to price above no car space. Pulling such pairs to their midpoint, or raising the car space
+rent to match, each raised the typical miss by about 55 cents on the earlier checks.</li>
+<li>Lifting every rent for growth after the as-at date. Asks ran above the estimate in 16 of 20 earlier two-month
+windows, and a 1% lift cut the typical miss from $52.25 to $51.55 there. It then lost on May to July ($45.44 to
+$46.52), and helped in none of the five most recent windows, so it is switched off.</li>
+<li>A seasonal lift copied from the same months a year earlier. One unusual year spoiled the next, and it did worse
+than no lift at full strength.</li>
+<li>Pulling thin buildings toward neighbours did not help buildings that advertised other flat types but not this one:
+on May to July their typical miss rose from $101.25 to $108.41.</li>
+</ul>
 
 <h2>What remains uncertain?</h2>
 

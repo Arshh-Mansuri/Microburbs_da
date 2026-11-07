@@ -71,7 +71,8 @@ def main() -> None:
     ).fit(earlier)
     no_neighbours = rm.RentModel(as_at=AS_AT, neighbours=0, **rm.BUILDING_ONLY).fit(earlier)
     with_neighbours = rm.RentModel(as_at=AS_AT, shrink_adverts=0, distance_half_m=None, **rm.BUILDING_ONLY).fit(earlier)
-    unshrunk = rm.RentModel(as_at=AS_AT, shrink_adverts=0, distance_half_m=None).fit(earlier)
+    unshrunk = rm.RentModel(as_at=AS_AT, shrink_adverts=0, distance_half_m=None, side_shifts=False).fit(earlier)
+    shared_shift = rm.RentModel(as_at=AS_AT, side_shifts=False).fit(earlier)
 
     example = accuracy(test, example_estimate(leases, test))
     ours_rent = model.predict(test)
@@ -85,7 +86,8 @@ def main() -> None:
         ("Same building, older asks brought forward", accuracy(test, suburb_only_rent)),
         ("Plus nearest buildings where a building never advertised", building_level),
         ("Plus the flat's own past asks and its bathrooms", accuracy(test, unshrunk.predict(test))),
-        ("Plus thin buildings pulled toward their neighbours", ours),
+        ("Plus thin buildings pulled toward their neighbours", accuracy(test, shared_shift.predict(test))),
+        ("Plus each parking side moved by its own evidence", ours),
     ]
 
     # The cases the headline hides, decided only from adverts before May 2026.
@@ -444,7 +446,8 @@ to bedrooms.</p>
 building share its bedrooms, bathrooms and parking, the estimate shifts to their median. Where the flat itself
 advertised before, its own asks, brought forward the same way, take {rm.OWN_WEIGHT:.0%} of the weight and the building
 the rest. Adding them took the typical miss from {money(building_level['miss'], 2)} to
-{money(steps[-2][1]['miss'], 2)}.</p>
+{money(steps[-3][1]['miss'], 2)}. Each parking side now moves by its own evidence first, borrowing the other side's
+only when it has none.</p>
 
 <p>Last, a building with few adverts is pulled toward its neighbours. Its own median counts in proportion to how many
 adverts back it, weighted by age, and the neighbours count as {rm.SHRINK_ADVERTS} of an advert. Nearby buildings now
@@ -479,11 +482,36 @@ only. Flats that never advertised before stand in for the 16,094 flats in the ha
 
 <p>Pulling thin buildings toward their neighbours was chosen on the three earlier checks, where it cut the typical miss
 from $49.45 to $48.35 and helped flats that had never advertised. Across seven earlier quarters it won or tied in six.
-On May to July it helped never-advertised flats and buildings but cost {money(ours['miss'] - steps[-2][1]['miss'], 2)}
-on the headline, well inside the range a different draw of adverts would give.</p>
+On May to July it helped never-advertised flats and buildings but cost
+{money(steps[-2][1]['miss'] - steps[-3][1]['miss'], 2)} on the headline, well inside the range a different draw of
+adverts would give.</p>
+
+<p>May to July was looked at across several versions, so its figure is a little optimistic. As a cleaner guide we also
+ran 20 rolling tests that mirror the hand-in, each fitting on adverts up to the end of a month and scoring the next two
+months, with the last ending in April 2026. Pooled over 45,592 adverts the typical miss was $51.00, with 73.9% within
+$100. Moving each parking side by its own evidence was chosen there: it beat one shared shift in 8 windows, tied 10 and
+lost 2. On the same tests the flat's own past asks carried nearly all the gain from the two fields ($57.00 to $51.50),
+while bathrooms alone gave $57.00 to $56.50 and added little once own asks were in.</p>
 
 <p>Drawing 1,699 adverts at random, the size of the hidden set, 2,000 times put the typical miss between
 {money(low_band, 2)} and {money(high_band, 2)} nine times in ten.</p>
+
+<h2>What did not work?</h2>
+
+<p>Several ideas looked sensible and lost on the checks, so they are not in the estimate:</p>
+<ul>
+<li>Floor level. Once the building is known, each floor adds about $1.46 a week, and adding it raised the typical
+miss on two of the three earlier checks.</li>
+<li>Forcing a car space to price above no car space. Pulling such pairs to their midpoint, or raising the car space
+rent to match, each raised the typical miss by about 55 cents on the earlier checks.</li>
+<li>Lifting every rent for growth after the as-at date. Asks ran above the estimate in 16 of 20 earlier two-month
+windows, and a 1% lift cut the typical miss from $52.25 to $51.55 there. It then lost on May to July ($45.44 to
+$46.52), and helped in none of the five most recent windows, so it is switched off.</li>
+<li>A seasonal lift copied from the same months a year earlier. One unusual year spoiled the next, and it did worse
+than no lift at full strength.</li>
+<li>Pulling thin buildings toward neighbours did not help buildings that advertised other flat types but not this one:
+on May to July their typical miss rose from $101.25 to $108.41.</li>
+</ul>
 
 <h2>What remains uncertain?</h2>
 
