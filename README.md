@@ -122,9 +122,10 @@ about $1.46 a week once the building is known. `report.html` covers these findin
 7. A building with few adverts is pulled toward its neighbours, which count as half an advert, and nearby buildings
    count for less with distance, halving every 500 metres.
 
-All settings were chosen on three earlier folds (validating on Aug–Oct 2025, Nov 2025–Jan 2026 and Feb–Apr 2026).
-The May–July 2026 adverts were used once, to score the frozen rule. The final rents refit on every advert up to
-31 July 2026. Nothing dated after that is used.
+Settings were chosen on three earlier folds (validating on Aug–Oct 2025, Nov 2025–Jan 2026 and Feb–Apr 2026)
+or on the 20 rolling tests, all before May 2026. The table below scores each version on May to July 2026, which
+was looked at across versions, so read it as a development record rather than a clean test. The final rents
+refit on every advert up to 31 July 2026. Nothing dated after that is used.
 
 | Step | Typical miss | Within $100 | R squared |
 |---|---|---|---|
