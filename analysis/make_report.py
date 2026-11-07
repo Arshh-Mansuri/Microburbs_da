@@ -310,7 +310,7 @@ def main() -> None:
   .back {{ color: var(--dim); font-size: 14px; }}
 </style>
 
-<p class="back">Report for the Microburbs Hackathon Rents task, 7 November 2026</p>
+<p class="back">Uni Trifecta's report for the Microburbs Hackathon Rents task, 7 November 2026</p>
 <h1>Which building a flat is in sets its rent. Its floor barely does.</h1>
 
 <p class="lead">{lead_type[0].upper() + lead_type[1:]} in {place(lead['suburb'])} ask anywhere from

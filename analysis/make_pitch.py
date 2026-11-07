@@ -73,7 +73,7 @@ def slide(c, number, kicker, title):
     y = para(c, title, 56, H - 86, 850, size=28, font="Helvetica-Bold", color=INK, leading=1.2)
     c.setFont("Helvetica", 9)
     c.setFillColor(MUTED)
-    c.drawString(56, 24, "Microburbs Hackathon  |  Rents task  |  City of Sydney flats at 31 July 2026")
+    c.drawString(56, 24, "Uni Trifecta  |  Microburbs Hackathon  |  Rents task  |  City of Sydney flats at 31 July 2026")
     c.drawRightString(W - 56, 24, str(number))
     return y
 
@@ -114,7 +114,7 @@ def title_slide(c):
     c.drawString(56, 70, SITE)
     c.setFont("Helvetica", 12)
     c.setFillColor(HexColor("#94a3b8"))
-    c.drawString(56, 50, "Rents task, 7 November 2026")
+    c.drawString(56, 50, "Uni Trifecta  |  Rents task, 7 November 2026")
 
 
 def problem_slide(c):
@@ -308,7 +308,7 @@ def script_slide(c):
 def main() -> None:
     c = canvas.Canvas(str(OUT), pagesize=(W, H))
     c.setTitle("Which building a flat is in sets its rent - Microburbs Hackathon pitch")
-    c.setAuthor("microburbs-team")
+    c.setAuthor("Uni Trifecta")
     for build in (title_slide, problem_slide, insight_slide, method_slide, results_slide,
                   trust_slide, product_slide, who_slide, limits_slide, script_slide):
         build(c)
