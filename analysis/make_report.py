@@ -65,18 +65,24 @@ def main() -> None:
     raw_test = raw["listing_date"].between(TEST_START, TEST_END)
 
     model = rm.RentModel(as_at=AS_AT).fit(earlier)
-    last_year = rm.RentModel(as_at=AS_AT, max_age_years=1, half_life_years=None, neighbours=0).fit(earlier)
-    no_neighbours = rm.RentModel(as_at=AS_AT, neighbours=0).fit(earlier)
+    last_year = rm.RentModel(
+        as_at=AS_AT, max_age_years=1, half_life_years=None, neighbours=0, **rm.BUILDING_ONLY
+    ).fit(earlier)
+    no_neighbours = rm.RentModel(as_at=AS_AT, neighbours=0, **rm.BUILDING_ONLY).fit(earlier)
+    with_neighbours = rm.RentModel(as_at=AS_AT, **rm.BUILDING_ONLY).fit(earlier)
 
     example = accuracy(test, example_estimate(leases, test))
     ours_rent = model.predict(test)
     ours = accuracy(test, ours_rent)
     suburb_only_rent = no_neighbours.predict(test)
+    neighbour_rent = with_neighbours.predict(test)
+    building_level = accuracy(test, neighbour_rent)
     steps = [
         ("Suburb, bedrooms and parking (the example report)", example),
         ("Same building, last year of adverts only", accuracy(test, last_year.predict(test))),
         ("Same building, older asks brought forward", accuracy(test, suburb_only_rent)),
-        ("Plus nearest buildings where a building never advertised", ours),
+        ("Plus nearest buildings where a building never advertised", building_level),
+        ("Plus the flat's own past asks and its bathrooms", ours),
     ]
 
     test["estimate"] = ours_rent
@@ -240,7 +246,7 @@ def main() -> None:
         return f"""<svg viewBox="0 0 600 236" role="img" aria-label="How far off each of {len(test):,} later adverts was, for the example method and for ours">
   {''.join(rows)}
 </svg>
-<p class="legend"><span class="key muted"></span>Suburb, bedrooms and parking <span class="key accent"></span>Same building, older asks brought forward</p>"""
+<p class="legend"><span class="key muted"></span>Suburb, bedrooms and parking <span class="key accent"></span>Our estimate: own building, then the flat's own past asks</p>"""
 
     def table(head, rows):
         head_html = "".join(f"<th>{h}</th>" for h in head)
@@ -310,8 +316,9 @@ def main() -> None:
 <p class="lead">{lead_type[0].upper() + lead_type[1:]} in {place(lead['suburb'])} ask anywhere from
 {money(lead['low'])} to {money(lead['high'])} a week, depending on the building. That {money(lead['high'] - lead['low'])}
 spread sits inside one suburb, one bedroom count and one parking answer. Moving up one floor in the same building adds
-about {money(per_floor, 2)} a week. Comparing a flat with its own building instead of its suburb cut the typical miss
-from {money(example['miss'])} to {money(ours['miss'], 2)} on {len(test):,} later adverts.</p>
+about {money(per_floor, 2)} a week. Comparing a flat with its own building instead of its suburb, then with its own
+past asks where it has them, cut the typical miss from {money(example['miss'])} to {money(ours['miss'], 2)} on
+{len(test):,} later adverts.</p>
 
 <p>Tenants can check an ask against the same building before signing. Landlords can price against their own building
 before advertising. Buyers can see that two flats in one suburb are not one rent.</p>
@@ -422,13 +429,19 @@ within {rm.NEIGHBOUR_REACH_M:,} metres that did, by straight-line distance from 
 none is in reach does it fall back to the suburb, bedrooms and parking median, which needs ten earlier adverts, then
 to bedrooms.</p>
 
+<p>Two fields then move both rents for the individual flat. Where at least {rm.MIN_BATHROOM_ADS} earlier adverts in the
+building share its bedrooms, bathrooms and parking, the estimate shifts to their median. Where the flat itself
+advertised before, its own asks, brought forward the same way, take {rm.OWN_WEIGHT:.0%} of the weight and the building
+the rest. Adding them took the typical miss from {money(building_level['miss'], 2)} to {money(ours['miss'], 2)}.</p>
+
 {table(["Comparison used", "Later adverts", "Typical miss", "Within $100"],
        [(name, f"{r.n:,}", money(r.typical, 2), f"{r.within:.1f}%") for name, r in sources.iterrows()])}
 
 <h2>How did we check it?</h2>
 
 <p>The three year reach, the three year half life, the one advert minimum and the {rm.NEIGHBOURS} nearest buildings
-within {rm.NEIGHBOUR_REACH_M:,} metres were chosen on three earlier checks,
+within {rm.NEIGHBOUR_REACH_M:,} metres, the {rm.OWN_WEIGHT:.0%} weight on a flat's own asks and the
+{rm.MIN_BATHROOM_ADS} advert bathroom minimum were chosen on three earlier checks,
 scored on February to April 2026, November 2025 to January 2026, and August to October 2025. The May to July 2026
 adverts played no part in choosing them. Floor level was tested the same way and left out, because it raised the
 typical miss on two of the three.</p>

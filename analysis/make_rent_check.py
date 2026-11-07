@@ -34,6 +34,8 @@ SOURCES = [
 
 
 def evidence(source: str) -> str:
+    if "own adverts" in source:
+        return "own"
     if source.startswith("building"):
         return "building"
     if source.startswith("nearby"):
@@ -58,7 +60,7 @@ def spreads(leases: pd.DataFrame) -> dict:
     ratio, miss, kind = scored(rm.RentModel(as_at=as_at).fit(earlier))
     suburb_ratio, suburb_miss, suburb_kind = scored(rm.RentModel(as_at=as_at, neighbours=0).fit(earlier))
     found = {}
-    for name in ("building", "nearby", "suburb"):
+    for name in ("own", "building", "nearby", "suburb"):
         if name == "suburb":
             ratio, miss, kind = suburb_ratio, suburb_miss, suburb_kind
         chosen = kind == name
@@ -85,6 +87,8 @@ def main() -> None:
 
     ads = model._as_at_prices(leases)
     counts = ads.groupby(["building_address", "bedrooms", "car_space"]).size().to_dict()
+    own_counts = ads.groupby(["gnaf_id", "bedrooms"]).size().to_dict()
+    refined = model.predict_both(flats)
 
     buildings = (
         flats.groupby(["building_address", "suburb"], sort=False)[["latitude", "longitude"]]
@@ -118,20 +122,28 @@ def main() -> None:
     suburb_rows = [[pair(None, b, name) for b in BEDROOMS] for name in suburbs]
 
     streets, street_id, flat_rows = [], {}, []
-    for row in flats.itertuples(index=False):
+    for row, own in zip(flats.itertuples(index=False), refined.itertuples(index=False)):
         unit, street = split_address(row.address)
         if street not in street_id:
             street_id[street] = len(streets)
             streets.append(street)
-        flat_rows.append(
-            [
-                unit,
-                street_id[street],
-                building_id[(row.building_address, row.suburb)],
-                -1 if pd.isna(row.bedrooms) else int(min(row.bedrooms, 5)),
-                -1 if pd.isna(row.car_space) else int(row.car_space),
+        flat_row = [
+            unit,
+            street_id[street],
+            building_id[(row.building_address, row.suburb)],
+            -1 if pd.isna(row.bedrooms) else int(min(row.bedrooms, 5)),
+            -1 if pd.isna(row.car_space) else int(row.car_space),
+        ]
+        # The flat's own asks and bathroom count only apply at its recorded bedrooms.
+        flags = ("own adverts" in own.source) * 1 + ("bathrooms" in own.source) * 2
+        if flags:
+            flat_row += [
+                round(own.rent_with_car_space * 2) / 2,
+                round(own.rent_without_car_space * 2) / 2,
+                flags,
+                own_counts.get((row.gnaf_id, row.bedrooms), 0),
             ]
-        )
+        flat_rows.append(flat_row)
 
     data = {
         "streets": streets,
@@ -275,11 +287,18 @@ function estimate() {
   const row = state.flat !== null
     ? D.buildings[D.flats[state.flat][2]][1 + state.bedrooms]
     : D.suburbRents[state.suburb][state.bedrooms];
-  const [withP, withoutP, src, nWith, nWithout] = row;
+  let [withP, withoutP, src, nWith, nWithout] = row;
   const source = D.sources[src];
-  const kind = source.startsWith("building") ? "building" : source.startsWith("nearby") ? "nearby" : "suburb";
+  let kind = source.startsWith("building") ? "building" : source.startsWith("nearby") ? "nearby" : "suburb";
+  let own = 0, bathrooms = false;
+  const f = state.flat !== null ? D.flats[state.flat] : null;
+  if (f && f.length > 5 && f[3] === state.bedrooms) {
+    [withP, withoutP] = [f[5], f[6]];
+    bathrooms = (f[7] & 2) > 0;
+    if (f[7] & 1) { own = f[8]; kind = "own"; }
+  }
   return { rent: state.parking ? withP : withoutP, other: state.parking ? withoutP : withP,
-           withP, withoutP, source, kind, nWith, nWithout };
+           withP, withoutP, source, kind, nWith, nWithout, own, bathrooms };
 }
 
 function progress() {
@@ -364,6 +383,15 @@ function verdictFor(rent, e, q) {
 }
 
 function evidenceText(e) {
+  const extra = e.bathrooms ? " It is also adjusted to flats in this building with the same number of bathrooms." : "";
+  if (e.kind === "own")
+    return `This flat itself was advertised ${e.own} time${e.own === 1 ? "" : "s"} in the last ${D.years} years. Its own
+      past asks, brought forward to July 2026 prices, carry three quarters of the weight, and the rest of the building
+      the remainder.${extra}`;
+  return baseEvidence(e) + extra;
+}
+
+function baseEvidence(e) {
   const bed = ["studio flats", "1-bedroom flats", "2-bedroom flats", "3-bedroom flats", "4-bedroom flats",
                "flats with 5 or more bedrooms"][state.bedrooms];
   const side = state.parking ? "with a car space" : "without a car space";

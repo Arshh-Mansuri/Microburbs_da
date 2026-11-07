@@ -34,6 +34,10 @@ MIN_SUBURB_ADS = 10
 MIN_INDEX_ADS = 30
 NEIGHBOURS = 10
 NEIGHBOUR_REACH_M = 1000
+OWN_WEIGHT = 0.75
+USE_BATHROOMS = True
+MIN_BATHROOM_ADS = 3
+BUILDING_ONLY = {"own_weight": 0.0, "use_bathrooms": False}
 
 # A derived car space never lowers the ask, and never adds more than this share
 # of it. Thin groups otherwise throw out gaps wider than the rent itself.
@@ -76,8 +80,13 @@ class RentModel:
     min_suburb_ads: int = MIN_SUBURB_ADS
     neighbours: int = NEIGHBOURS
     neighbour_reach_m: float = NEIGHBOUR_REACH_M
+    own_weight: float = OWN_WEIGHT
+    use_bathrooms: bool = USE_BATHROOMS
+    min_bathroom_ads: int = MIN_BATHROOM_ADS
 
     index: pd.Series = None
+    own: dict = field(default_factory=dict)
+    building_bathrooms: dict = field(default_factory=dict)
     nearby: dict = field(default_factory=dict)
     adverts_used: int = 0
     building: dict = field(default_factory=dict)
@@ -141,6 +150,12 @@ class RentModel:
         self.suburb = medians(["suburb", "bedrooms", "car_space"], self.min_suburb_ads)
         self.suburb_any_parking = medians(["suburb", "bedrooms"], self.min_suburb_ads)
         self.by_bedrooms = medians("bedrooms", self.min_suburb_ads)
+        self.own = medians(["gnaf_id", "bedrooms", "car_space"], 1) if self.own_weight > 0 else {}
+        self.building_bathrooms = (
+            medians(["building_address", "bedrooms", "bathrooms", "car_space"], self.min_bathroom_ads)
+            if self.use_bathrooms
+            else {}
+        )
 
         self.gap_by_suburb = parking_gaps(["suburb", "bedrooms"], self.min_suburb_ads)
         self.gap_by_bedrooms = parking_gaps("bedrooms", self.min_suburb_ads)
@@ -241,16 +256,39 @@ class RentModel:
         gap = self._bounded_gap(suburb, bedrooms, middle)
         return middle + gap / 2, middle - gap / 2, source
 
+    def _refine(self, pair, building_address, bedrooms, gnaf_id, bathrooms):
+        """Move both rents by what this flat's bathrooms and its own past asks say."""
+        with_parking, without_parking, source = pair
+        shift = 0.0
+        for car_space, base in ((1.0, with_parking), (0.0, without_parking)):
+            same_bathrooms = self.building_bathrooms.get((building_address, bedrooms, bathrooms, car_space))
+            if same_bathrooms is not None:
+                shift = same_bathrooms - base
+                source += ", bathrooms"
+                break
+        for car_space, base in ((1.0, with_parking), (0.0, without_parking)):
+            own = self.own.get((gnaf_id, bedrooms, car_space))
+            if own is not None:
+                shift += self.own_weight * (own - (base + shift))
+                source += ", own adverts"
+                break
+        return with_parking + shift, without_parking + shift, source
+
     def predict_both(self, flats: pd.DataFrame) -> pd.DataFrame:
         """Weekly rent with a car space and without, one row per flat."""
+        n = len(flats)
+        gnaf_ids = flats["gnaf_id"] if "gnaf_id" in flats else [None] * n
+        bathrooms = flats["bathrooms"] if "bathrooms" in flats else [np.nan] * n
         pairs = [
-            self._pair(*row)
-            for row in zip(
+            self._refine(self._pair(address, bedrooms, suburb, lat, lon), address, bedrooms, gnaf, baths)
+            for address, bedrooms, suburb, lat, lon, gnaf, baths in zip(
                 flats["building_address"],
                 flats["bedrooms"],
                 flats["suburb"],
                 flats["latitude"],
                 flats["longitude"],
+                gnaf_ids,
+                bathrooms,
             )
         ]
         return pd.DataFrame(
