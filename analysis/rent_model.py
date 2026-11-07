@@ -46,6 +46,9 @@ DISTANCE_HALF_M = 500
 # Share added to both rents for growth after the as-at date. A 1% lift won on
 # windows through April 2026 but lost on the May to July check, so it stays off.
 LIFT = 0.0
+# Each parking side moves by its own bathroom and own-advert evidence, borrowing
+# the other side's only when it has none. Chosen on rolling windows before May 2026.
+SIDE_SHIFTS = True
 
 # A derived car space never lowers the ask, and never adds more than this share
 # of it. Thin groups otherwise throw out gaps wider than the rent itself.
@@ -94,6 +97,7 @@ class RentModel:
     shrink_adverts: float = SHRINK_ADVERTS
     distance_half_m: float = DISTANCE_HALF_M
     lift: float = LIFT
+    side_shifts: bool = SIDE_SHIFTS
 
     index: pd.Series = None
     building_weight: dict = field(default_factory=dict)
@@ -295,6 +299,8 @@ class RentModel:
     def _refine(self, pair, building_address, bedrooms, gnaf_id, bathrooms):
         """Move both rents by what this flat's bathrooms and its own past asks say."""
         with_parking, without_parking, source = pair
+        if self.side_shifts:
+            return self._refine_sides(pair, building_address, bedrooms, gnaf_id, bathrooms)
         shift = 0.0
         for car_space, base in ((1.0, with_parking), (0.0, without_parking)):
             same_bathrooms = self.building_bathrooms.get((building_address, bedrooms, bathrooms, car_space))
@@ -309,6 +315,32 @@ class RentModel:
                 source += ", own adverts"
                 break
         return with_parking + shift, without_parking + shift, source
+
+    def _refine_sides(self, pair, building_address, bedrooms, gnaf_id, bathrooms):
+        """As _refine, but each parking side uses its own evidence before borrowing the other's."""
+        with_parking, without_parking, source = pair
+        bases = {1.0: with_parking, 0.0: without_parking}
+        same_bathrooms = {c: self.building_bathrooms.get((building_address, bedrooms, bathrooms, c)) for c in bases}
+        own = {c: self.own.get((gnaf_id, bedrooms, c)) for c in bases}
+        if any(v is not None for v in same_bathrooms.values()):
+            source += ", bathrooms"
+        if any(v is not None for v in own.values()):
+            source += ", own adverts"
+        refined = {}
+        for car_space, base in bases.items():
+            other = 1.0 - car_space
+            shift = 0.0
+            if same_bathrooms[car_space] is not None:
+                shift = same_bathrooms[car_space] - base
+            elif same_bathrooms[other] is not None:
+                shift = same_bathrooms[other] - bases[other]
+            if own[car_space] is not None:
+                shift += self.own_weight * (own[car_space] - (base + shift))
+            elif own[other] is not None:
+                other_shift = shift if same_bathrooms[other] is None else same_bathrooms[other] - bases[other]
+                shift += self.own_weight * (own[other] - (bases[other] + other_shift))
+            refined[car_space] = base + shift
+        return refined[1.0], refined[0.0], source
 
     def predict_both(self, flats: pd.DataFrame) -> pd.DataFrame:
         """Weekly rent with a car space and without, one row per flat."""
