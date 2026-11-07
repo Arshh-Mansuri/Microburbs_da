@@ -43,6 +43,9 @@ BUILDING_ONLY = {"own_weight": 0.0, "use_bathrooms": False}
 SHRINK_ADVERTS = 0.5
 # Nearby buildings count for less with distance, halving every this many metres.
 DISTANCE_HALF_M = 500
+# Share added to both rents for growth after the as-at date. A 1% lift won on
+# windows through April 2026 but lost on the May to July check, so it stays off.
+LIFT = 0.0
 
 # A derived car space never lowers the ask, and never adds more than this share
 # of it. Thin groups otherwise throw out gaps wider than the rent itself.
@@ -90,6 +93,7 @@ class RentModel:
     min_bathroom_ads: int = MIN_BATHROOM_ADS
     shrink_adverts: float = SHRINK_ADVERTS
     distance_half_m: float = DISTANCE_HALF_M
+    lift: float = LIFT
 
     index: pd.Series = None
     building_weight: dict = field(default_factory=dict)
@@ -323,10 +327,11 @@ class RentModel:
                 bathrooms,
             )
         ]
+        scale = 1 + self.lift
         return pd.DataFrame(
             {
-                "rent_with_car_space": [p[0] for p in pairs],
-                "rent_without_car_space": [p[1] for p in pairs],
+                "rent_with_car_space": [p[0] * scale for p in pairs],
+                "rent_without_car_space": [p[1] * scale for p in pairs],
                 "source": [p[2] for p in pairs],
             },
             index=flats.index,
